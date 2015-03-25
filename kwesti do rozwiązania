@@ -1,0 +1,24 @@
+Obsługa różnych wielkości obrazków w zależności od rozdzielczości urządzenia:
+- na serwerze przechowywać różne wielkości lóg (odpowiednie przeskalowane)
+- na urządzenie pobierać tylko te logo o odpowiedniej wielkości
+- w tabli trzymać linki do wszystkich lóg na serwerze; w zapytaniu podawać rozdzielczość urządzania i zwracać odpowiedni adres
+
+Mając wyświetlone pytanie, do kolejnego można przejść gdy:
+- użytkownik zaznaczy odpowiedź (czas zostanie zatrzymany do momentu otwarcia kolejnego pytania)
+- wszystkie loga z następngo pytania zostaną pobrane na urządzenie
+
+Wstawianie rekordów do tabel (przez użytkownika):
+- getInsertQuery(type1 var1, type2 var2) {
+     String query = "INSERT INTO " + getTbName() + " VALUES "
+        + " ("
+        + " " + var1
+        + ", '" + var2 + "'"
+        + ");";
+
+- Jak powiązać tabele Answer oraz Ranking? za pomocą kolumn `ATTEMPT_CNTR`,`CATEGORY_ID`?
+
+- Obecnie model danych umożliwia pobieranie różnych odpowiedzi na pytanie, w zależności od ustawionego języka.
+  Jeśli nie będzie to wykorzystywane to można przenieść kolumny AD1..6PATH z tabeli QuestionT do tabeli Question.
+  Zaoszczędzi to trochę miejsca (adresy www nie będą się dublowały dla różnych wersji językowych odpowiedzi)
+
+- czas rozwiązywania quizu powinien być zatrzymywany w momencie wybrania odpowiedzi (gdy odpowiedź została wybrana jeszcze przed załadowaniem obrazków do kolejnego pytania) i włączany po wyświetleniu następnego pytania
