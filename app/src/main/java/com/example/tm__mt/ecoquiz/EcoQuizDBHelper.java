@@ -157,4 +157,39 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
 
         return correctAnswer;
     }
+
+    public boolean saveAnswer(int attemptCntr, int category, int questionNumber, int answerGiven, String time) {
+        Log.d(DEBUG_TAG, "Saving given answer to DB");
+
+        DB = this.getWritableDatabase();
+        String query = "INSERT INTO " + Answer.getTbName() + " VALUES ("
+                +        attemptCntr
+                + ", " + category
+                + ", " + questionNumber
+                + ", " + answerGiven
+                + ", '" + time + "'"
+                + ")";
+        DB.execSQL(query);
+
+        Log.d(DEBUG_TAG, "Saving answer; query: " + query);
+
+        return true;
+    }
+
+    public int getAttemptsCntr(int category) {
+        Log.d(DEBUG_TAG, "Getting attempts counter from DB");
+        int cntr = 0;
+
+        DB = this.getReadableDatabase();
+        Cursor c = DB.rawQuery("SELECT MAX(" + Answer.getColAttemptCntr() + ") FROM " + Answer.getTbName()
+                + " WHERE " + Answer.getColCategoryId() + " = ?"
+                , new String[] { Integer.toString(category) });
+
+        c.moveToFirst();
+        if (c.getCount() > 0)
+            cntr = c.getInt(0);
+        c.close();
+
+        return cntr;
+    }
 }

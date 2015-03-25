@@ -51,7 +51,7 @@ public class CategoryActivity extends ActionBarActivity {
                     nextQuestion = new NextQuestion(1,1,1,1);
             }
 
-            if (nextQuestion.prepare(CategoryActivity.this)) {
+            if (nextQuestion.prepareFirst(CategoryActivity.this)) {
                 Log.d(DEBUG_TAG, "categoryClickListener; Starting PreQuestionActivity...");
                 Intent i = new Intent(CategoryActivity.this, PreQuestionActivity.class);
                 i.putExtra("questionData", nextQuestion);

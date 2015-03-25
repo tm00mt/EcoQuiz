@@ -17,6 +17,7 @@ public class NextQuestion implements Parcelable {
     private int category = 0;
     private int lang = 0;
     private int correctAnswer = 0;
+    private int attemptCntr = 0;
 
     public NextQuestion(int questionNumber, int category, int lang, int logoSize) {
         this.setQuestionNumber(questionNumber);
@@ -32,6 +33,7 @@ public class NextQuestion implements Parcelable {
         this.logoSize = in.readInt();
         this.correctAnswer = in.readInt();
         this.question = in.readString();
+        this.attemptCntr = in.readInt();
 
         this.logoLinks[0] = in.readString();
         this.logoLinks[1] = in.readString();
@@ -59,8 +61,9 @@ public class NextQuestion implements Parcelable {
         dest.writeInt(this.category);
         dest.writeInt(this.lang);
         dest.writeInt(this.logoSize );
-        dest.writeInt(this.correctAnswer);
+        dest.writeInt(this.getCorrectAnswer());
         dest.writeString(this.question);
+        dest.writeInt(this.attemptCntr);
 
         dest.writeString(this.logoLinks[0]);
         dest.writeString(this.logoLinks[1]);
@@ -142,7 +145,7 @@ public class NextQuestion implements Parcelable {
     public boolean prepare(Context context) {
         Log.d(DEBUG_TAG, "Preparing data from DB...");
 
-        if (this.category > 0 && this.questionNumber > 0 && this.getLogoSize() > 0 && this.lang > 0) {
+        if (this.category > 0 && this.questionNumber > 0 && this.logoSize > 0 && this.lang > 0) {
             EcoQuizDBHelper DBHelper = new EcoQuizDBHelper(context);
 
             this.question = DBHelper.getQuestion(this.getCategory(), this.getQuestionNumber(), this.getLang());
@@ -157,8 +160,35 @@ public class NextQuestion implements Parcelable {
 
             return true;
         } else {
+            Log.d(DEBUG_TAG, "Some parameter(s) are missing! "
+                    + " category=" + this.category
+                    + ", questionNumber=" + this.questionNumber
+                    + ", logoSize=" + this.logoSize
+                    + ", lang=" + this.lang);
             return false;
         }
+    }
+
+    boolean prepareFirst(Context context) {
+        Log.d(DEBUG_TAG, "Preparing data from DB (1st question)...");
+
+        if (!prepare(context))
+            return false;
+
+        EcoQuizDBHelper DBHelper = new EcoQuizDBHelper(context);
+        this.attemptCntr = DBHelper.getAttemptsCntr(this.category) + 1;
+
+        return true;
+    }
+
+    public boolean saveAnswer(int answerGiven, Context context) {
+        Log.d(DEBUG_TAG, "Saving given answer into DB...");
+
+        String time = "00:00:00.00";
+
+        EcoQuizDBHelper DBHelper = new EcoQuizDBHelper(context);
+        DBHelper.saveAnswer(this.attemptCntr, this.category, this.questionNumber, answerGiven, time);
+        return true;
     }
 
     public String getQuestion() {
@@ -178,5 +208,17 @@ public class NextQuestion implements Parcelable {
           + " QT: " + this.getQuestion();
 
         return r;
+    }
+
+    public int getCorrectAnswer() {
+        return correctAnswer;
+    }
+
+    public int getAttemptCntr() {
+        return attemptCntr;
+    }
+
+    public void setAttemptCntr(int attemptsCntr) {
+        this.attemptCntr = attemptsCntr;
     }
 }

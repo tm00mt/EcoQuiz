@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 public class QuestionActivity extends ActionBarActivity {
     private static final String DEBUG_TAG = "QuestionActivity";
@@ -67,6 +68,7 @@ public class QuestionActivity extends ActionBarActivity {
                 currentQuestion.getCategory(),
                 currentQuestion.getLang(),
                 currentQuestion.getLogoSize());
+        nextQuestion.setAttemptCntr(currentQuestion.getAttemptCntr());
 
         //check if next question exists
         if (nextQuestion.prepare(this)) {
@@ -86,22 +88,36 @@ public class QuestionActivity extends ActionBarActivity {
         @Override
         public void onClick(View v) {
             answerClicked = true;
-
-            //todo zapis do tabeli udzielonej odpowiedzi
+            int answerGiven = 0;
+            ImageView ivHelper = null;
 
             switch (v.getId()) {
-                case R.id.ivLogo1:
-                    break;
-                case R.id.ivLogo2:
-                    break;
-                case R.id.ivLogo3:
-                    break;
-                case R.id.ivLogo4:
-                    break;
-                case R.id.ivLogo5:
-                    break;
-                case R.id.ivLogo6:
-                    break;
+                case R.id.ivLogo1: answerGiven = 1; ivHelper = ivLogo1; break;
+                case R.id.ivLogo2: answerGiven = 2; ivHelper = ivLogo2; break;
+                case R.id.ivLogo3: answerGiven = 3; ivHelper = ivLogo3; break;
+                case R.id.ivLogo4: answerGiven = 4; ivHelper = ivLogo4; break;
+                case R.id.ivLogo5: answerGiven = 5; ivHelper = ivLogo5; break;
+                case R.id.ivLogo6: answerGiven = 6; ivHelper = ivLogo6; break;
+            }
+
+            currentQuestion.saveAnswer(answerGiven, QuestionActivity.this);
+
+            if (currentQuestion.getCorrectAnswer() == answerGiven) {
+                ivHelper.setBackgroundColor(0xFF00FF00);
+                ivHelper.invalidate();
+
+                Toast.makeText(QuestionActivity.this, "OK", Toast.LENGTH_SHORT).show();
+            } else {
+                ivHelper.setBackgroundColor(0xFFFF0000);
+                ivHelper.invalidate();
+
+                Toast.makeText(QuestionActivity.this, "Wrong", Toast.LENGTH_SHORT).show();
+            }
+
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
             }
 
             if (isLastQuestion) {

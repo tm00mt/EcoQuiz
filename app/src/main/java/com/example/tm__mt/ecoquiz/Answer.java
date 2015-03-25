@@ -8,6 +8,12 @@ public class Answer {
     private int givenAnswer;
     private String answerTime;
 
+    private static final String COL_ATTEMPT_CNTR = "ATTEMPT_CNTR";
+    private static final String COL_CATEGORY_ID = "CATEGORY_ID";
+    private static final String COL_QUESTION_NUM = "QUESTION_NUM";
+    private static final String COL_GIVEN_ANSWER = "GIVEN_ANSWER";
+    private static final String COL_ANSWER_TIME = "ANSWER_TIME";
+
     private static final String TB_NAME = "Answer";
     private static final String CREATE_QUERY = "CREATE TABLE IF NOT EXISTS " + getTbName() + " ( "
             + " ATTEMPT_CNTR      INTEGER NOT NULL "
@@ -36,6 +42,26 @@ public class Answer {
 
     public static String getDropQuery() {
         return DROP_QUERY;
+    }
+
+    public static String getColAttemptCntr() {
+        return COL_ATTEMPT_CNTR;
+    }
+
+    public static String getColCategoryId() {
+        return COL_CATEGORY_ID;
+    }
+
+    public static String getColQuestionNum() {
+        return COL_QUESTION_NUM;
+    }
+
+    public static String getColGivenAnswer() {
+        return COL_GIVEN_ANSWER;
+    }
+
+    public static String getColAnswerTime() {
+        return COL_ANSWER_TIME;
     }
 
     public int getAttemptCntr() {
