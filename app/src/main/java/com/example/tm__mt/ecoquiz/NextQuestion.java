@@ -18,6 +18,7 @@ public class NextQuestion implements Parcelable {
     private int lang = 0;
     private int correctAnswer = 0;
     private int attemptCntr = 0;
+    private long prevQuestionTime = 0;
 
     public NextQuestion(int questionNumber, int category, int lang, int logoSize) {
         this.setQuestionNumber(questionNumber);
@@ -34,6 +35,7 @@ public class NextQuestion implements Parcelable {
         this.correctAnswer = in.readInt();
         this.question = in.readString();
         this.attemptCntr = in.readInt();
+        this.prevQuestionTime = in.readLong();
 
         this.logoLinks[0] = in.readString();
         this.logoLinks[1] = in.readString();
@@ -64,6 +66,7 @@ public class NextQuestion implements Parcelable {
         dest.writeInt(this.getCorrectAnswer());
         dest.writeString(this.question);
         dest.writeInt(this.attemptCntr);
+        dest.writeLong(this.prevQuestionTime);
 
         dest.writeString(this.logoLinks[0]);
         dest.writeString(this.logoLinks[1]);
@@ -181,10 +184,10 @@ public class NextQuestion implements Parcelable {
         return true;
     }
 
-    public boolean saveAnswer(int answerGiven, Context context) {
+    public boolean saveAnswer(int answerGiven, long elapsedTime, Context context) {
         Log.d(DEBUG_TAG, "Saving given answer into DB...");
 
-        String time = "00:00:00.00";
+        String time = "" + elapsedTime;
 
         EcoQuizDBHelper DBHelper = new EcoQuizDBHelper(context);
         DBHelper.saveAnswer(this.attemptCntr, this.category, this.questionNumber, answerGiven, time);
@@ -220,5 +223,13 @@ public class NextQuestion implements Parcelable {
 
     public void setAttemptCntr(int attemptsCntr) {
         this.attemptCntr = attemptsCntr;
+    }
+
+    public long getPrevQuestionTime() {
+        return prevQuestionTime;
+    }
+
+    public void setPrevQuestionTime(long prevQuestionTime) {
+        this.prevQuestionTime = prevQuestionTime;
     }
 }

@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
@@ -19,6 +20,8 @@ public class QuestionActivity extends ActionBarActivity {
     private boolean logosLoaded = false;
     private boolean answerClicked = false;
     private boolean isLastQuestion = false;
+
+    private long startTime, endTime, elapsedTime;
 
     TextView tvQuestion;
     ImageView ivLogo1, ivLogo2, ivLogo3, ivLogo4, ivLogo5, ivLogo6;
@@ -63,6 +66,9 @@ public class QuestionActivity extends ActionBarActivity {
         ivLogo5.setImageBitmap(BitmapFactory.decodeFile(currentQuestion.getBitmapPath(4)));
         ivLogo6.setImageBitmap(BitmapFactory.decodeFile(currentQuestion.getBitmapPath(5)));
 
+        //set starting time of timer
+        startTime = SystemClock.elapsedRealtime();
+
         //prepare next question
         nextQuestion = new NextQuestion(currentQuestion.getQuestionNumber()+1,
                 currentQuestion.getCategory(),
@@ -90,6 +96,8 @@ public class QuestionActivity extends ActionBarActivity {
             answerClicked = true;
             int answerGiven = 0;
             ImageView ivHelper = null;
+            endTime = SystemClock.elapsedRealtime();
+            elapsedTime = currentQuestion.getPrevQuestionTime() + endTime - startTime;
 
             switch (v.getId()) {
                 case R.id.ivLogo1: answerGiven = 1; ivHelper = ivLogo1; break;
@@ -100,7 +108,9 @@ public class QuestionActivity extends ActionBarActivity {
                 case R.id.ivLogo6: answerGiven = 6; ivHelper = ivLogo6; break;
             }
 
-            currentQuestion.saveAnswer(answerGiven, QuestionActivity.this);
+            currentQuestion.saveAnswer(answerGiven, elapsedTime, QuestionActivity.this);
+
+            ivHelper.setImageBitmap(BitmapFactory.decodeFile(currentQuestion.getBitmapPath(5)));
 
             if (currentQuestion.getCorrectAnswer() == answerGiven) {
                 ivHelper.setBackgroundColor(0xFF00FF00);
@@ -114,11 +124,11 @@ public class QuestionActivity extends ActionBarActivity {
                 Toast.makeText(QuestionActivity.this, "Wrong", Toast.LENGTH_SHORT).show();
             }
 
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            //try {
+            //    Thread.sleep(5000);
+            //} catch (InterruptedException e) {
+            //    e.printStackTrace();
+            //}
 
             if (isLastQuestion) {
                 Intent i = new Intent(getApplicationContext(), ResultActivity.class);
@@ -126,10 +136,7 @@ public class QuestionActivity extends ActionBarActivity {
                 startActivity(i);
                 finish();
             } else if (logosLoaded) {
-                Intent i = new Intent(getApplicationContext(), QuestionActivity.class);
-                i.putExtra("questionData", nextQuestion);
-                startActivity(i);
-                finish();
+                startNextQuestionActivity();
             }
         }
     };
@@ -164,11 +171,16 @@ public class QuestionActivity extends ActionBarActivity {
                 nextQuestion.setBitmapPath(logos[i].getLogoPath(), i);
 
             if (logosLoaded && answerClicked) {
-                Intent intent = new Intent(getApplicationContext(), QuestionActivity.class);
-                intent.putExtra("questionData", nextQuestion);
-                startActivity(intent);
-                finish();
+                startNextQuestionActivity();
             }
         }
+    }
+
+    private void startNextQuestionActivity() {
+        nextQuestion.setPrevQuestionTime(elapsedTime);
+        Intent intent = new Intent(getApplicationContext(), QuestionActivity.class);
+        intent.putExtra("questionData", nextQuestion);
+        startActivity(intent);
+        finish();
     }
 }
