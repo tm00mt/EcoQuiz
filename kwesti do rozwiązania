@@ -22,3 +22,21 @@ Wstawianie rekordów do tabel (przez użytkownika):
   Zaoszczędzi to trochę miejsca (adresy www nie będą się dublowały dla różnych wersji językowych odpowiedzi)
 
 - czas rozwiązywania quizu powinien być zatrzymywany w momencie wybrania odpowiedzi (gdy odpowiedź została wybrana jeszcze przed załadowaniem obrazków do kolejnego pytania) i włączany po wyświetleniu następnego pytania
+- czas powinien być zatrzymywany gdy aplikacja straciła focus: zapamiętanie i odczyt czasu w metodach onPause() oraz onResume()
+
+- język urządzenia, z racji, że może się zmieniać podczas rozwiązywania quizu, powinien być aktualizowany w metodzie onResume() aby
+  po powrocie do pytania wyświetliło się ono w poprawnym języku
+  !!!Problem jest bardziej zlożony bo cała paczka z wszystkimi elementami pytania, czyli także z jego treścią, jest pobierana i
+  przesyłana w poprzednim Activity. Samą treść pytania można dociągnąć z bazy w odpowiednim języku ale co jeżli odpowiedzi (loga)
+  także będą różne dla różnych języków? Aby je uaktualnić trzeba ponownie pobrać je z sieci.
+  Bez problemu można zaimplementować zmianę języka od 'następnego' pytania
+
+
+
+  SELECT TQ.question_num, TA.given_answer, TQT.ad_ok, TA.end_time
+  FROM Answer TA, Question TQ, QuestionT TQT
+  WHERE TA.category_id = category
+    AND TA.attempt_num = attempt
+    AND TA.category_id = TQ.category_id
+    AND TA.question_id = TQ._id
+    AND TQ._id = TQT.question_id

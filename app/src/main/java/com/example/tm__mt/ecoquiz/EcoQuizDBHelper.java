@@ -6,17 +6,21 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.util.Log;
 
+import java.util.ArrayList;
+
 /**
  * The MySQLiteHelper class provides access to operations on internal DB
  * used in EcoQuiz application.
  */
 public class EcoQuizDBHelper extends SQLiteOpenHelper {
-
     private static final String DEBUG_TAG = "MySQLiteHelper";
 
     private static final String DB_NAME = "EcoQuizDB";
     private static final int DB_VERSION = 1;
     private SQLiteDatabase DB;
+
+    private ArrayList<ResultRow> resultDataRR;
+    private ArrayList<Integer> correctAnswers;
 
     public EcoQuizDBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -72,22 +76,6 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
 
 
         //onCreate(db);
-    }
-
-    public String getFirstLang() {
-        Log.d(DEBUG_TAG, "getting data1");
-        DB = this.getReadableDatabase();
-        String r = "";
-        Cursor c = DB.query(Lang.getTbName(), new String[]{"ID", "CODE"}, null,null,null,null,null);
-        c.moveToFirst();
-        Log.d(DEBUG_TAG, "getting data4");
-        while (!c.isAfterLast()) {
-            r += c.getString(0) + " ";
-            r += c.getString(1) + " ";
-            c.moveToNext();
-        }
-        c.close();
-        return r;
     }
 
     public String[] getLogoLinks(int category, int questionNumber, int langId) {
@@ -191,5 +179,53 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
         c.close();
 
         return cntr;
+    }
+
+    public int prepareResultData(int category, int attempt) {
+        Log.d(DEBUG_TAG, "Preparing data from DB to display results");
+
+        int cntr = 0;
+
+        DB = this.getReadableDatabase();
+        Cursor c = DB.rawQuery(
+                "SELECT TQ." + Question.getColQuestionNum()
+                   + ", TA." + Answer.getColGivenAnswer()
+                   + ", TQ." + Question.getColCorrectAnswer()
+                   + ", TA." + Answer.getColAnswerTime()
+                + " FROM "
+                             + Answer.getTbName() + " TA "
+                   + ", "    + Question.getTbName() + " TQ"
+                + " WHERE "
+                       + " TA." + Answer.getColCategoryId() + " = ?"
+                   + " AND TA." + Answer.getColAttemptCntr() + " = ?"
+                   + " AND TA." + Answer.getColCategoryId() + " = TQ." + Question.getColCategoryId()
+                   + " AND TA." + Answer.getColQuestionNum() + " = TQ." + Question.getColQuestionNum()
+                , new String[] { Integer.toString(category), Integer.toString(attempt) });
+
+        c.moveToFirst();
+        if (c.getCount() > 0) {
+            ResultRow rr;
+            resultDataRR = new ArrayList<>();
+            correctAnswers = new ArrayList<>();
+            while (!c.isAfterLast()) {
+                Log.d(DEBUG_TAG, "Cursor: " + c.getInt(0) + " " + c.getInt(1) + " " + c.getInt(2) + " " + c.getString(3));
+                rr = new ResultRow(c.getInt(0), c.getInt(1), c.getString(3));
+                resultDataRR.add(rr);
+                correctAnswers.add(c.getInt(2));
+                c.moveToNext();
+                cntr++;
+            }
+        }
+        c.close();
+
+        return cntr;
+    }
+
+    public ResultRow getResultDataRR(int i) {
+        return resultDataRR.get(i);
+    }
+
+    public int getResultDataCA(int i) {
+        return correctAnswers.get(i);
     }
 }

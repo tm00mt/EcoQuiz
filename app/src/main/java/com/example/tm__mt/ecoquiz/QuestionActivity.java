@@ -21,7 +21,9 @@ public class QuestionActivity extends ActionBarActivity {
     private boolean answerClicked = false;
     private boolean isLastQuestion = false;
 
-    private long startTime, endTime, elapsedTime;
+    private long startTime = 0;
+    private long endTime = 0;
+    private long elapsedTime = 0;
 
     TextView tvQuestion;
     ImageView ivLogo1, ivLogo2, ivLogo3, ivLogo4, ivLogo5, ivLogo6;
@@ -131,10 +133,7 @@ public class QuestionActivity extends ActionBarActivity {
             //}
 
             if (isLastQuestion) {
-                Intent i = new Intent(getApplicationContext(), ResultActivity.class);
-                //i.putExtra("questionData", nextQuestion);
-                startActivity(i);
-                finish();
+                starrResultActivity();
             } else if (logosLoaded) {
                 startNextQuestionActivity();
             }
@@ -181,6 +180,14 @@ public class QuestionActivity extends ActionBarActivity {
         Intent intent = new Intent(getApplicationContext(), QuestionActivity.class);
         intent.putExtra("questionData", nextQuestion);
         startActivity(intent);
+        finish();
+    }
+
+    private void starrResultActivity() {
+        Intent i = new Intent(getApplicationContext(), ResultActivity.class);
+        i.putExtra("categoryNumber", currentQuestion.getCategory());
+        i.putExtra("attemptNumber", currentQuestion.getAttemptCntr());
+        startActivity(i);
         finish();
     }
 }
