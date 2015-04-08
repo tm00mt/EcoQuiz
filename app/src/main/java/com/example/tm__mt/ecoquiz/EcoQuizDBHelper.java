@@ -4,9 +4,12 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.text.Editable;
 import android.util.Log;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * The MySQLiteHelper class provides access to operations on internal DB
@@ -21,6 +24,9 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
 
     private ArrayList<ResultRow> resultDataRR;
     private ArrayList<Integer> correctAnswers;
+    private ArrayList<RankingRow> rankingDataRR;
+
+    private Map categories;
 
     public EcoQuizDBHelper(Context context) {
         super(context, DB_NAME, null, DB_VERSION);
@@ -37,6 +43,10 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
         db.execSQL(Category.getCreateQuery());
         db.execSQL(Category.getInsertQuery());
         Log.d(DEBUG_TAG, "Table " + Category.getTbName() + " created.");
+
+        db.execSQL(CategoryT.getCreateQuery());
+        db.execSQL(CategoryT.getInsertQuery());
+        Log.d(DEBUG_TAG, "Table " + CategoryT.getTbName() + " created.");
 
         db.execSQL(Question.getCreateQuery());
         db.execSQL(Question.getInsertQuery());
@@ -227,5 +237,132 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
 
     public int getResultDataCA(int i) {
         return correctAnswers.get(i);
+    }
+
+    public int prepareCategoryOptions(int lang) {
+        Log.d(DEBUG_TAG, "Preparing available categories in DB...");
+
+        int cntr = 0;
+
+        DB = this.getReadableDatabase();
+        Cursor c = DB.rawQuery(
+                "SELECT "      + CategoryT.getColCategoryId() + " "
+                        + ", " + CategoryT.getColName() + " "
+              + "FROM "
+                               + CategoryT.getTbName() + " "
+              + "WHERE "
+                               + CategoryT.getColLangId() + " = ?"
+              , new String[] { Integer.toString(lang) });
+
+        c.moveToFirst();
+        if (c.getCount() > 0) {
+            categories = new HashMap();
+            while (!c.isAfterLast()) {
+                Log.d(DEBUG_TAG, "Cursor: " + c.getInt(0) + " " + c.getInt(1));
+
+                categories.put(c.getInt(0), c.getString(1));
+                c.moveToNext();
+                cntr++;
+            }
+        }
+        c.close();
+
+        return cntr;
+    }
+
+    public String getCategoryOption(int key) {
+        return (String) categories.get(key);
+    }
+
+    public int prepareRankingtData(int categoryId) {
+        Log.d(DEBUG_TAG, "Preparing data from DB to display ranking");
+
+        int cntr = 0;
+
+        DB = this.getReadableDatabase();
+        Cursor c = DB.rawQuery(
+                "SELECT "
+                           + Ranking.getColName()
+                    + ", " + Ranking.getColScore()
+                    + ", " + Ranking.getColTime()
+                    + ", " + Ranking.getColAttemptCntr()
+              + " FROM "
+                           + Ranking.getTbName()
+              + " WHERE "
+                        + Ranking.getColCategoryId() + " = ?"
+              + " ORDER BY " + Ranking.getColScore() + " DESC, " + Ranking.getColTime() + " ASC"
+              , new String[] { Integer.toString(categoryId) });
+
+        c.moveToFirst();
+        if (c.getCount() > 0) {
+            RankingRow rr;
+            rankingDataRR = new ArrayList<>();
+            while (!c.isAfterLast()) {
+                Log.d(DEBUG_TAG, "Cursor: " + c.getString(0) + " " + c.getInt(1) + " " + c.getString(2) + " " + c.getInt(3));
+                rr = new RankingRow(c.getString(0), c.getInt(1), c.getString(2), c.getInt(3));
+                rankingDataRR.add(rr);
+                c.moveToNext();
+                cntr++;
+            }
+        }
+        c.close();
+
+        return cntr;
+    }
+
+    public RankingRow getRankingDataRR(int i) {
+        return rankingDataRR.get(i);
+    }
+
+    public void insertIntoRanking(int categoryId, int attemptNr, String name) {
+        Log.d(DEBUG_TAG, "Saving new row in Ranking table");
+
+        int score = 0;
+        DB = this.getReadableDatabase();
+        String query =
+                "SELECT COUNT(*) "
+              + "FROM "
+                       + Question.getTbName() + " TQ "
+                + ", " + Answer.getTbName() + " TA "
+              + "WHERE "
+                    + "TQ." + Question.getColCategoryId() + " = TA." + Answer.getColCategoryId() + " "
+                + "AND TQ." + Question.getColQuestionNum() + " = TA." + Answer.getColQuestionNum() + " "
+                + "AND TA." + Answer.getColCategoryId() + " = ? "
+                + "AND TA." + Answer.getColAttemptCntr() + " = ? "
+                + "AND TQ." + Question.getColCorrectAnswer() + " = TA." + Answer.getColGivenAnswer();
+
+        Cursor c = DB.rawQuery(query, new String[] { Integer.toString(categoryId), Integer.toString(attemptNr) });
+        c.moveToFirst();
+        if (c.getCount() > 0) {
+            score = c.getInt(0);
+        }
+        c.close();
+
+        String time = "00:00:00.000";
+        query =
+                "SELECT MAX(" + Answer.getColAnswerTime() + ") "
+              + "FROM "
+                       + Answer.getTbName() + " "
+              + "WHERE "
+                       + Answer.getColCategoryId() + " = ? "
+              + "AND " + Answer.getColAttemptCntr() + " = ?";
+        c = DB.rawQuery(query, new String[] { Integer.toString(categoryId), Integer.toString(attemptNr) });
+        c.moveToFirst();
+        if (c.getCount() > 0) {
+            time = c.getString(0);
+        }
+        c.close();
+
+        DB = this.getWritableDatabase();
+        query = "INSERT INTO " + Ranking.getTbName() + " VALUES ("
+                +         attemptNr
+                + ", "  + categoryId
+                + ", '" + name + "'"
+                + ", "  + score
+                + ", '" + time + "'"
+                + ")";
+        DB.execSQL(query);
+
+        Log.d(DEBUG_TAG, "Saving new Ranking row; query: " + query);
     }
 }

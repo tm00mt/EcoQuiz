@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 
 public class ResultActivity extends ListActivity {
@@ -20,12 +21,12 @@ public class ResultActivity extends ListActivity {
         Log.d(DEBUG_TAG, "Creating ResultActivity...");
 
         Intent intent = getIntent();
-        int categoryId = intent.getIntExtra("categoryNumber", 0);
-        int attemptNr = intent.getIntExtra("attemptNumber", 0);
+        final int categoryId = intent.getIntExtra("categoryNumber", 0);
+        final int attemptNr = intent.getIntExtra("attemptNumber", 0);
 
         EcoQuizDBHelper DBHelper = new EcoQuizDBHelper(this);
-        int cntr = DBHelper.prepareResultData(categoryId, attemptNr);
         ResultAdapter ra = new ResultAdapter(this);
+        int cntr = DBHelper.prepareResultData(categoryId, attemptNr);
         if (cntr > 0) {
             int i = 0;
             while (i < cntr) {
@@ -54,6 +55,18 @@ public class ResultActivity extends ListActivity {
 
         lv.addHeaderView(header);
         setListAdapter(ra);
+
+        Button bSave = (Button) findViewById(R.id.bSave);
+        bSave.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent(getApplicationContext(), RankingActivity.class);
+                intent.putExtra("categoryId", categoryId);
+                intent.putExtra("attemptNr", attemptNr);
+                startActivity(intent);
+                finish();
+            }
+        });
 
     }
 }

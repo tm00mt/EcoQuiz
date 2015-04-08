@@ -2,4 +2,15 @@
     <!-- Default screen margins, per the Android Design guidelines. -->
     <dimen name="activity_horizontal_margin">16dp</dimen>
     <dimen name="activity_vertical_margin">16dp</dimen>
+
+    <!-- Dimensions of a fields in a result activity single row. They should sum up to 100. -->
+    <integer name="int_result_row_num">10</integer>
+    <integer name="int_result_row_given_answer">40</integer>
+    <integer name="int_result_row_answer_time">50</integer>
+
+    <!-- Dimensions of a fields in a ranking activity single row. They should sum up to 100. -->
+    <integer name="int_ranking_row_pos">15</integer>
+    <integer name="int_ranking_row_name">45</integer>
+    <integer name="int_ranking_row_score">15</integer>
+    <integer name="int_ranking_row_time">25</integer>
 </resources>

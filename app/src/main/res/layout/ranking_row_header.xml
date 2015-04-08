@@ -7,26 +7,36 @@
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Nr"
+        android:text="Pos"
         android:textSize="30dp"
-        android:id="@+id/tvHeaderQuestionNumber"
+        android:id="@+id/tvHeaderPosition"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="@integer/int_result_row_num" />
+        android:layout_weight="@integer/int_ranking_row_pos"
+        android:background="#ff040bff" />
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="Given answer"
+        android:text="Name"
         android:textSize="30dp"
-        android:id="@+id/tvHeaderGivenAnswer"
+        android:id="@+id/tvHeaderName"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="@integer/int_result_row_given_answer" />
+        android:layout_weight="@integer/int_ranking_row_name" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Score"
+        android:textSize="30dp"
+        android:id="@+id/tvHeaderScore"
+        android:layout_weight="@integer/int_ranking_row_score"
+        android:background="#ff2300ff" />
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Time"
         android:textSize="30dp"
-        android:id="@+id/tvHeaderAnswerTime"
-        android:layout_weight="@integer/int_result_row_answer_time" />
+        android:id="@+id/tvHeaderTime"
+        android:layout_weight="@integer/int_ranking_row_time" />
 </LinearLayout>

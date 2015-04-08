@@ -3,31 +3,41 @@
     android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#ffff0500">
+    android:background="#ff04e7ff">
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Text"
         android:textSize="30dp"
-        android:id="@+id/tvQuestionNumber"
+        android:id="@+id/tvPosition"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="@integer/int_result_row_num" />
+        android:layout_weight="@integer/int_ranking_row_pos"
+        android:background="#fff300ff" />
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Text"
         android:textSize="30dp"
-        android:id="@+id/tvGivenAnswer"
+        android:id="@+id/tvName"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="@integer/int_result_row_given_answer" />
+        android:layout_weight="@integer/int_ranking_row_name" />
 
     <TextView
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:text="Text"
         android:textSize="30dp"
-        android:id="@+id/tvAnswerTime"
-        android:layout_weight="@integer/int_result_row_answer_time" />
+        android:id="@+id/tvScore"
+        android:layout_weight="@integer/int_ranking_row_score"
+        android:background="#ffff00c8" />
+
+    <TextView
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Text"
+        android:textSize="30dp"
+        android:id="@+id/tvTime"
+        android:layout_weight="@integer/int_ranking_row_time" />
 </LinearLayout>

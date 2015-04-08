@@ -8,12 +8,19 @@
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:onClick="openQuestion">
+        android:layout_height="fill_parent">
 
         <TextView
-            android:id="@+id/tv1"
-            android:text="@string/hello_world"
+            android:id="@+id/tvStartQuiz"
+            android:text="@string/option_start_quiz"
+            android:textSize="30dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:id="@+id/tvResults"
+            android:text="@string/option_results"
+            android:textSize="30dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content" />
 

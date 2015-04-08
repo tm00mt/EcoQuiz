@@ -115,11 +115,13 @@ public class QuestionActivity extends ActionBarActivity {
             ivHelper.setImageBitmap(BitmapFactory.decodeFile(currentQuestion.getBitmapPath(5)));
 
             if (currentQuestion.getCorrectAnswer() == answerGiven) {
+                //todo DOESNT WORK
                 ivHelper.setBackgroundColor(0xFF00FF00);
                 ivHelper.invalidate();
 
                 Toast.makeText(QuestionActivity.this, "OK", Toast.LENGTH_SHORT).show();
             } else {
+                //todo DOESNT WORK
                 ivHelper.setBackgroundColor(0xFFFF0000);
                 ivHelper.invalidate();
 

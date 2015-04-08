@@ -187,10 +187,32 @@ public class NextQuestion implements Parcelable {
     public boolean saveAnswer(int answerGiven, long elapsedTime, Context context) {
         Log.d(DEBUG_TAG, "Saving given answer into DB...");
 
-        String time = "" + elapsedTime;
+        String timeInGoodFormat;
+        int h, m, s, ms;                //Integer variables of hours, minutes, seconds and milliseconds
+        String h_s, m_s, s_s, ms_s;     //String variables of hours, minutes, seconds and milliseconds
+
+        ms = (int) (elapsedTime - (elapsedTime / 1000) * 1000);
+        s = (int) (elapsedTime - ms) / 1000;
+        h = s / (60 * 60);
+        m = (s - (h * 60 * 60)) / 60;
+        s = s - (h * 60 * 60) - m * 60;
+        Log.d(DEBUG_TAG, "ms: " + ms + ", s: " + s + ", m: " + m + ", h: " + h);
+
+        if (h < 10) h_s = "0" + h;
+        else h_s = "" + h;
+        if (m < 10) m_s = "0" + m;
+        else m_s = "" + m;
+        if (s < 10) s_s = "0" + s;
+        else s_s = "" + s;
+        if (ms < 10) ms_s = "00" + ms;
+        else if (ms < 100) ms_s = "0" + ms;
+        else ms_s = "" + ms;
+
+        timeInGoodFormat = h_s + ":" + m_s + ":" + s_s + "." + ms_s;
+        Log.d(DEBUG_TAG, "timeInGoodFormat: " + timeInGoodFormat + ", elapsed time: " + elapsedTime);
 
         EcoQuizDBHelper DBHelper = new EcoQuizDBHelper(context);
-        DBHelper.saveAnswer(this.attemptCntr, this.category, this.questionNumber, answerGiven, time);
+        DBHelper.saveAnswer(this.attemptCntr, this.category, this.questionNumber, answerGiven, timeInGoodFormat);
         return true;
     }
 

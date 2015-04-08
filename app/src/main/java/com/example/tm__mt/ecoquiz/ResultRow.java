@@ -1,6 +1,5 @@
 package com.example.tm__mt.ecoquiz;
 
-
 public class ResultRow {
     public int questionNumber;
     public int givenAnswer;

@@ -3,9 +3,9 @@ Obsługa różnych wielkości obrazków w zależności od rozdzielczości urząd
 - na urządzenie pobierać tylko te logo o odpowiedniej wielkości
 - w tabli trzymać linki do wszystkich lóg na serwerze; w zapytaniu podawać rozdzielczość urządzania i zwracać odpowiedni adres
 
-Mając wyświetlone pytanie, do kolejnego można przejść gdy:
-- użytkownik zaznaczy odpowiedź (czas zostanie zatrzymany do momentu otwarcia kolejnego pytania)
-- wszystkie loga z następngo pytania zostaną pobrane na urządzenie
++ Mając wyświetlone pytanie, do kolejnego można przejść gdy:
+  - użytkownik zaznaczy odpowiedź (czas zostanie zatrzymany do momentu otwarcia kolejnego pytania)
+  - wszystkie loga z następngo pytania zostaną pobrane na urządzenie
 
 Wstawianie rekordów do tabel (przez użytkownika):
 - getInsertQuery(type1 var1, type2 var2) {
@@ -21,7 +21,8 @@ Wstawianie rekordów do tabel (przez użytkownika):
   Jeśli nie będzie to wykorzystywane to można przenieść kolumny AD1..6PATH z tabeli QuestionT do tabeli Question.
   Zaoszczędzi to trochę miejsca (adresy www nie będą się dublowały dla różnych wersji językowych odpowiedzi)
 
-- czas rozwiązywania quizu powinien być zatrzymywany w momencie wybrania odpowiedzi (gdy odpowiedź została wybrana jeszcze przed załadowaniem obrazków do kolejnego pytania) i włączany po wyświetleniu następnego pytania
+- czas rozwiązywania quizu powinien być zatrzymywany w momencie wybrania odpowiedzi (gdy odpowiedź została wybrana jeszcze przed
+  załadowaniem obrazków do kolejnego pytania) i włączany po wyświetleniu następnego pytania
 - czas powinien być zatrzymywany gdy aplikacja straciła focus: zapamiętanie i odczyt czasu w metodach onPause() oraz onResume()
 
 - język urządzenia, z racji, że może się zmieniać podczas rozwiązywania quizu, powinien być aktualizowany w metodzie onResume() aby
@@ -31,12 +32,18 @@ Wstawianie rekordów do tabel (przez użytkownika):
   także będą różne dla różnych języków? Aby je uaktualnić trzeba ponownie pobrać je z sieci.
   Bez problemu można zaimplementować zmianę języka od 'następnego' pytania
 
+- dodać tabelę CategoryT- jest coraz więcej miejsc, w których trzeba pilnować nazwy kategorii (w odpowiednim języku) oraz id;
+  trzymając to w tabelach dane będą na pewno spójne i nie trzeba będzie pamiętać aby zmieniać/dodawać w kilku(nastu) miejscach kategorie
+  i ich identyfikatory
 
+- jeśli QuestionActivity straci focus to w onPause() należy zatrzymać wątki pobierające pliki z sieci (jeśli nie zosały pobrane),
+  a po odzyskaniu focusu uruchomić te wątki ponownie- onResume()
+  * ostanie pytanie
+  * PreQuestionActivity
 
-  SELECT TQ.question_num, TA.given_answer, TQT.ad_ok, TA.end_time
-  FROM Answer TA, Question TQ, QuestionT TQT
-  WHERE TA.category_id = category
-    AND TA.attempt_num = attempt
-    AND TA.category_id = TQ.category_id
-    AND TA.question_id = TQ._id
-    AND TQ._id = TQT.question_id
+- połączenie z internetem sprawdzać za pomocą pingu do np. domowej strony www projektu bo w obecnej chwili na emulatorze, nie zawsze
+  poprawnie wykrywa połączenie (telefon ma włączone udostępnianie sieci ale nie wpisałem captcha z Aero)
+
+- podczas rozwiązywania quizu stan gry powinien zostać zapisany (SharedPreferences???) w przypadku gdy aplikacja straci focus
+  na rzecz innej aplikacji, np. przychodząca rozmowa, dostarczony sms; natomiast gdy użytkownik sam wyjdzie z aplikacji
+  (np. za pomocą przycisków Back lub Home) stan gry nie powinien zostać zapisany; zapytanie czy użytkownik chce przerwać quiz

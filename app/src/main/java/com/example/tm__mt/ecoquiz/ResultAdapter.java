@@ -84,7 +84,7 @@ public class ResultAdapter extends BaseAdapter {
                 convertView.setTag(holder);
             }
         } else {
-            holder = (ResultRowHolder)convertView.getTag();
+            holder = (ResultRowHolder) convertView.getTag();
         }
 
         ResultRow rr = data.get(position);

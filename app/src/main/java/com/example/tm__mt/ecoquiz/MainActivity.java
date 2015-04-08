@@ -1,18 +1,21 @@
 package com.example.tm__mt.ecoquiz;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.TextView;
 
 import java.util.Locale;
 
 public class MainActivity extends ActionBarActivity {
-
     private static final String DEBUG_TAG = "EcoQuizMain";
+
+    TextView tvStartQuiz, tvResults;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -21,14 +24,21 @@ public class MainActivity extends ActionBarActivity {
 
         Log.d(DEBUG_TAG, "Creating MainActivity....");
 
+        ApplicationSettings.setLanguage(Locale.getDefault().getISO3Language());
 
-        //test utworzenia bazy danych, do usunięcia!!!!!!!!!!!!!!!!!!!
-        //tv = (TextView) findViewById(R.id.tv1);
-        //EcoQuizDBHelper DBHelper = new EcoQuizDBHelper(this);
-        //String[] logos = DBHelper.getLogoLinks(1,1,1);
-        //tv.setText(logos[0] + "<>" + logos[1] + "<>" + logos[2]);
+        tvStartQuiz = (TextView) findViewById(R.id.tvStartQuiz);
+        tvResults = (TextView) findViewById(R.id.tvResults);
+
+        tvStartQuiz.setOnClickListener(optionClickListener);
+        tvResults.setOnClickListener(optionClickListener);
     }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        ApplicationSettings.setLanguage(Locale.getDefault().getISO3Language());
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -53,8 +63,23 @@ public class MainActivity extends ActionBarActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void openQuestion(View view) {
-        Intent i = new Intent(this, CategoryActivity.class);
-        startActivity(i);
-    }
+    private View.OnClickListener optionClickListener = new View.OnClickListener() {
+
+        @Override
+        public void onClick(View v) {
+            Intent i;
+            switch (v.getId()) {
+                case R.id.tvStartQuiz:
+                    i = new Intent(MainActivity.this, CategoryActivity.class);
+                    break;
+                case R.id.tvResults:
+                    i = new Intent(MainActivity.this, RankingActivity.class);
+                    break;
+                default:
+                    i = null;
+            }
+            if (i != null)
+                startActivity(i);
+        }
+    };
 }

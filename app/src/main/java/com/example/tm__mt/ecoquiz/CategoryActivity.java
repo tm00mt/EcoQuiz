@@ -1,12 +1,13 @@
 package com.example.tm__mt.ecoquiz;
 
 import android.content.Intent;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
-
+import android.widget.Toast;
 import java.util.Locale;
 
 public class CategoryActivity extends ActionBarActivity {
@@ -17,16 +18,25 @@ public class CategoryActivity extends ActionBarActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_actegory);
+        setContentView(R.layout.activity_category);
 
         Log.d(DEBUG_TAG, "Creating CategoryActivity...");
+
+        //todo content of this activity should be generated dynamicly
+        //prepare SQL query to select all categories from DB
 
         tvCategory1 = (TextView) findViewById(R.id.tvCategory1);
         tvCategory2 = (TextView) findViewById(R.id.tvCategory2);
 
         tvCategory1.setOnClickListener(categoryClickListener);
         tvCategory2.setOnClickListener(categoryClickListener);
+    }
 
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+
+        ApplicationSettings.setLanguage(Locale.getDefault().getISO3Language());
     }
 
     private View.OnClickListener categoryClickListener = new View.OnClickListener() {
@@ -34,11 +44,8 @@ public class CategoryActivity extends ActionBarActivity {
         @Override
         public void onClick(View v) {
 
+            int l = ApplicationSettings.getLanguage();
             NextQuestion nextQuestion;
-
-            int l = 1;
-            if ( Locale.getDefault().getISO3Language().equals("pol") )
-                l = 2;
 
             switch (v.getId()) {
                 case R.id.tvCategory1:
@@ -52,13 +59,12 @@ public class CategoryActivity extends ActionBarActivity {
             }
 
             if (nextQuestion.prepareFirst(CategoryActivity.this)) {
-                Log.d(DEBUG_TAG, "categoryClickListener; Starting PreQuestionActivity...");
                 Intent i = new Intent(CategoryActivity.this, PreQuestionActivity.class);
                 i.putExtra("questionData", nextQuestion);
                 startActivity(i);
             } else {
-                //todo nie podano wszystkich danych do zapytania SQL
-                //lub zapytanie zwróciło pusty wynik-> obsłużyć sytuację
+                Toast.makeText(CategoryActivity.this, "No (more) data in DB.", Toast.LENGTH_SHORT).show();
+                finish();
             }
         }
     };

@@ -18,10 +18,10 @@ public class Question {
     private static final String CREATE_QUERY = "CREATE TABLE IF NOT EXISTS " + getTbName() + " ( "
             + " CATEGORY_ID       INTEGER NOT NULL "
             + ",QUESTION_NUM      INTEGER NOT NULL "
-            + ",ID                INTEGER NOT NULL UNIQUE"
+            + ",ID                INTEGER NOT NULL UNIQUE "
             + ",CORRECT_ANSWER    INTEGER NOT NULL "
-            + ",PRIMARY KEY (QUESTION_NUM, CATEGORY_ID)"
-            + ",FOREIGN KEY(`CATEGORY_ID`) REFERENCES Category(ID)"
+            + ",PRIMARY KEY (QUESTION_NUM, CATEGORY_ID) "
+            + ",FOREIGN KEY(`CATEGORY_ID`) REFERENCES Category(ID) "
             + ");";
     private static final String INSERT_QUERY = "INSERT INTO " + getTbName() + " VALUES "
             + " (1, 1, 1, 5)"
