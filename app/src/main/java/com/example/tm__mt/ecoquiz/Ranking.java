@@ -24,7 +24,7 @@ public class Ranking {
             + ",PRIMARY KEY (ATTEMPT_CNTR, CATEGORY_ID)"
             + ",FOREIGN KEY(`CATEGORY_ID`) REFERENCES Category(ID)"
             + ");";
-    private static final String INSERT_QUERY = "";
+    private static String INSERT_QUERY = "";
     private static final String DROP_QUERY = "DROP " + getTbName() + " TABLE;";
 
     public static String getTbName() {

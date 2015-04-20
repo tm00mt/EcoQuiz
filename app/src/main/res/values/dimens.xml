@@ -13,4 +13,9 @@
     <integer name="int_ranking_row_name">45</integer>
     <integer name="int_ranking_row_score">15</integer>
     <integer name="int_ranking_row_time">25</integer>
+
+    <!-- Width weight of a single logo in a question activity row. They should sum up to 100. -->
+    <integer name="int_question_1stlogo">33</integer>
+    <integer name="int_question_2ndlogo">34</integer>
+    <integer name="int_question_3rdlogo">33</integer>
 </resources>

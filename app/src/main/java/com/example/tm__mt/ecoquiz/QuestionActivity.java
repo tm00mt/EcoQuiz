@@ -1,18 +1,24 @@
 package com.example.tm__mt.ecoquiz;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Handler;
 import android.os.SystemClock;
 import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class QuestionActivity extends ActionBarActivity {
+public class QuestionActivity extends Activity {
     private static final String DEBUG_TAG = "QuestionActivity";
     private static final int LOGOS_NUM = 6;
 
@@ -26,6 +32,9 @@ public class QuestionActivity extends ActionBarActivity {
     private long elapsedTime = 0;
 
     TextView tvQuestion;
+    FrameLayout flBorder;
+    boolean doHighlight;
+    int answerGiven;
     ImageView ivLogo1, ivLogo2, ivLogo3, ivLogo4, ivLogo5, ivLogo6;
     NextQuestion currentQuestion, nextQuestion;
 
@@ -96,49 +105,106 @@ public class QuestionActivity extends ActionBarActivity {
         @Override
         public void onClick(View v) {
             answerClicked = true;
-            int answerGiven = 0;
+            answerGiven = 0;
             ImageView ivHelper = null;
             endTime = SystemClock.elapsedRealtime();
             elapsedTime = currentQuestion.getPrevQuestionTime() + endTime - startTime;
 
             switch (v.getId()) {
-                case R.id.ivLogo1: answerGiven = 1; ivHelper = ivLogo1; break;
-                case R.id.ivLogo2: answerGiven = 2; ivHelper = ivLogo2; break;
-                case R.id.ivLogo3: answerGiven = 3; ivHelper = ivLogo3; break;
-                case R.id.ivLogo4: answerGiven = 4; ivHelper = ivLogo4; break;
-                case R.id.ivLogo5: answerGiven = 5; ivHelper = ivLogo5; break;
-                case R.id.ivLogo6: answerGiven = 6; ivHelper = ivLogo6; break;
+                case R.id.ivLogo1:
+                    answerGiven = 1;
+                    ivHelper = ivLogo1;
+                    flBorder = (FrameLayout) findViewById(R.id.flLogoContainer1);
+                    break;
+                case R.id.ivLogo2:
+                    answerGiven = 2;
+                    ivHelper = ivLogo2;
+                    flBorder = (FrameLayout) findViewById(R.id.flLogoContainer2);
+                    break;
+                case R.id.ivLogo3:
+                    answerGiven = 3;
+                    ivHelper = ivLogo3;
+                    flBorder = (FrameLayout) findViewById(R.id.flLogoContainer3);
+                    break;
+                case R.id.ivLogo4:
+                    answerGiven = 4;
+                    ivHelper = ivLogo4;
+                    flBorder = (FrameLayout) findViewById(R.id.flLogoContainer4);
+                    break;
+                case R.id.ivLogo5:
+                    answerGiven = 5;
+                    ivHelper = ivLogo5;
+                    flBorder = (FrameLayout) findViewById(R.id.flLogoContainer5);
+                    break;
+                case R.id.ivLogo6:
+                    answerGiven = 6;
+                    ivHelper = ivLogo6;
+                    flBorder = (FrameLayout) findViewById(R.id.flLogoContainer6);
+                    break;
             }
 
             currentQuestion.saveAnswer(answerGiven, elapsedTime, QuestionActivity.this);
 
-            ivHelper.setImageBitmap(BitmapFactory.decodeFile(currentQuestion.getBitmapPath(5)));
+            //ivHelper.setImageBitmap(BitmapFactory.decodeFile(currentQuestion.getBitmapPath(5)));
 
             if (currentQuestion.getCorrectAnswer() == answerGiven) {
-                //todo DOESNT WORK
-                ivHelper.setBackgroundColor(0xFF00FF00);
-                ivHelper.invalidate();
+                //flBorder.setBackground(getResources().getDrawable(R.drawable.question_logo_border_ok));
+                //ivHelper.setColorFilter(Color.rgb(0, 255, 0), android.graphics.PorterDuff.Mode.MULTIPLY );
+                //ivHelper.setBackgroundColor(0x3300FF00);
 
-                Toast.makeText(QuestionActivity.this, "OK", Toast.LENGTH_SHORT).show();
+                Toast.makeText(QuestionActivity.this, R.string.string_answer_correct, Toast.LENGTH_SHORT).show();
             } else {
-                //todo DOESNT WORK
-                ivHelper.setBackgroundColor(0xFFFF0000);
-                ivHelper.invalidate();
+                //flBorder.setBackground(getResources().getDrawable(R.drawable.question_logo_border_nok));
+                //ivHelper.setColorFilter(Color.rgb( 255, 0, 0), PorterDuff.Mode.OVERLAY );
+                //ivHelper.setBackgroundColor(0x33FF0000);
 
-                Toast.makeText(QuestionActivity.this, "Wrong", Toast.LENGTH_SHORT).show();
+                Toast.makeText(QuestionActivity.this, R.string.string_answer_wrong, Toast.LENGTH_SHORT).show();
             }
+            //flBorder.invalidate();
+            //ivHelper.invalidate();
 
-            //try {
-            //    Thread.sleep(5000);
-            //} catch (InterruptedException e) {
-            //    e.printStackTrace();
-            //}
+            // blink a border of clicked logo to indicate if it was good or bad answer...
+            int timeInMilis = 300;
+            int howManyBlinks = 5;
+            doHighlight = true;
+            blinkABorder(howManyBlinks, timeInMilis);
 
-            if (isLastQuestion) {
-                starrResultActivity();
-            } else if (logosLoaded) {
-                startNextQuestionActivity();
-            }
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    // ... and then start next activity
+                    if (isLastQuestion) {
+                        startResultActivity();
+                    } else if (logosLoaded) {
+                        startNextQuestionActivity();
+                    }
+                }
+            }, howManyBlinks * timeInMilis);
+        }
+
+        void blinkABorder(int howManyTimes, int timeInMilis) {
+            if (howManyTimes == 0)
+                return;
+
+            Handler handler = new Handler();
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    if (doHighlight) {
+                        if (currentQuestion.getCorrectAnswer() == answerGiven) {
+                            flBorder.setBackground(getResources().getDrawable(R.drawable.question_logo_border_ok));
+                        } else {
+                            flBorder.setBackground(getResources().getDrawable(R.drawable.question_logo_border_nok));
+                        }
+                    } else {
+                        flBorder.setBackground(getResources().getDrawable(R.drawable.question_logo_border));
+                    }
+                    flBorder.invalidate();
+
+                    doHighlight = !doHighlight;
+                }
+            }, howManyTimes * timeInMilis);
+
+            blinkABorder(howManyTimes - 1, timeInMilis);
         }
     };
 
@@ -161,7 +227,6 @@ public class QuestionActivity extends ActionBarActivity {
                     break;
                 }
             }
-
             return null;
         }
 
@@ -185,7 +250,7 @@ public class QuestionActivity extends ActionBarActivity {
         finish();
     }
 
-    private void starrResultActivity() {
+    private void startResultActivity() {
         Intent i = new Intent(getApplicationContext(), ResultActivity.class);
         i.putExtra("categoryNumber", currentQuestion.getCategory());
         i.putExtra("attemptNumber", currentQuestion.getAttemptCntr());

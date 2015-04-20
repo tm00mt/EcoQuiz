@@ -10,4 +10,16 @@
     <string name="option_results">Results</string>
     <string name="user_name_dialog">Type your name:</string>
 
+    <!-- Descriptions of ImageViews widgets in QuestionActivity -->
+    <string name="desc_iv_logo1">First logo image</string>
+    <string name="desc_iv_logo2">Second logo image</string>
+    <string name="desc_iv_logo3">Third logo image</string>
+    <string name="desc_iv_logo4">Fourth logo image</string>
+    <string name="desc_iv_logo5">Fifth logo image</string>
+    <string name="desc_iv_logo6">Sixth logo image</string>
+
+    <!-- Descriptions of ImageViews widgets in QuestionActivity -->
+    <string name="string_answer_correct">Correct</string>
+    <string name="string_answer_wrong">Wrong</string>
+
 </resources>

@@ -1,5 +1,10 @@
 package com.example.tm__mt.ecoquiz;
 
+/**
+ * Created by tm__mt
+ *
+ * Holds a structure of Answer table and provides basic functions/queries to that table.
+ */
 public class Answer {
 
     private int attemptCntr;

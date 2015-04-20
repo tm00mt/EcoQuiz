@@ -1,43 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="2dp">
 
-    <TextView
-        android:id="@+id/tvQuestion"
-        android:text="QuestionActivity"
-        android:textSize="40sp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:padding="2dp"
+        android:baselineAligned="false" >
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ivLogo1" />
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/flLogoContainer1"
+            android:layout_weight="@integer/int_question_1stlogo"
+            android:background="@drawable/question_logo_border"
+            android:layout_margin="2dp"
+            android:padding="3dp" >
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ivLogo2" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/ivLogo1"
+                android:contentDescription="@string/desc_iv_logo1" />
+        </FrameLayout>
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ivLogo3" />
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/flLogoContainer2"
+            android:layout_weight="@integer/int_question_2ndlogo"
+            android:background="@drawable/question_logo_border"
+            android:layout_margin="2dp"
+            android:padding="3dp" >
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ivLogo4" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/ivLogo2"
+                android:contentDescription="@string/desc_iv_logo2" />
+        </FrameLayout>
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ivLogo5" />
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/flLogoContainer3"
+            android:layout_weight="@integer/int_question_3rdlogo"
+            android:background="@drawable/question_logo_border"
+            android:layout_margin="2dp"
+            android:padding="3dp" >
 
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/ivLogo6" />
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/ivLogo3"
+                android:contentDescription="@string/desc_iv_logo3" />
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="4"
+        android:padding="2dp"
+        android:baselineAligned="false">
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/flLogoContainer4"
+            android:layout_weight="@integer/int_question_1stlogo"
+            android:background="@drawable/question_logo_border"
+            android:layout_margin="2dp"
+            android:padding="3dp" >
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/ivLogo4"
+                android:contentDescription="@string/desc_iv_logo4" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/flLogoContainer5"
+            android:layout_weight="@integer/int_question_2ndlogo"
+            android:background="@drawable/question_logo_border"
+            android:layout_margin="2dp"
+            android:padding="3dp" >
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/ivLogo5"
+                android:contentDescription="@string/desc_iv_logo5" />
+        </FrameLayout>
+
+        <FrameLayout
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:id="@+id/flLogoContainer6"
+            android:layout_weight="@integer/int_question_3rdlogo"
+            android:background="@drawable/question_logo_border"
+            android:layout_margin="2dp"
+            android:padding="3dp" >
+
+            <ImageView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:id="@+id/ivLogo6"
+                android:contentDescription="@string/desc_iv_logo6" />
+        </FrameLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:background="@drawable/question_question_border"
+        android:padding="2dp">
+
+        <TextView
+            android:id="@+id/tvQuestion"
+            android:textSize="25sp"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_margin="2dp"
+            android:paddingLeft="10dp"
+            android:paddingTop="2dp"
+            android:paddingRight="10dp" />
+    </LinearLayout>
+
 
 </LinearLayout>

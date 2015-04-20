@@ -10,4 +10,16 @@
     <string name="option_results">Tabela wyników</string>
     <string name="user_name_dialog">Podaj swoje imię:</string>
 
+    <!-- Descriptions of ImageViews widgets in QuestionActivity -->
+    <string name="desc_iv_logo1">Pierwsze logo</string>
+    <string name="desc_iv_logo2">Drugie logo</string>
+    <string name="desc_iv_logo3">Trzecie logo</string>
+    <string name="desc_iv_logo4">Czwarte logo</string>
+    <string name="desc_iv_logo5">Piąte logo</string>
+    <string name="desc_iv_logo6">Szóste logo</string>
+
+    <!-- Descriptions of ImageViews widgets in QuestionActivity -->
+    <string name="string_answer_correct">Dobrze</string>
+    <string name="string_answer_wrong">Źle</string>
+
 </resources>
