@@ -4,6 +4,9 @@ public class Lang {
     private int id;
     private String code;
 
+    private static final String COL_ID = "ID";
+    private static final String COL_CODE = "CODE";
+
     private static final String TB_NAME = "Lang";
     private static final String CREATE_QUERY = "CREATE TABLE IF NOT EXISTS " + getTbName() + " ( "
             + " ID      INTEGER NOT NULL "
@@ -30,6 +33,14 @@ public class Lang {
 
     public static String getInsertQuery() {
         return INSERT_QUERY;
+    }
+
+    public static String getColId() {
+        return COL_ID;
+    }
+
+    public static String getColCode() {
+        return COL_CODE;
     }
 
     public int getId() {

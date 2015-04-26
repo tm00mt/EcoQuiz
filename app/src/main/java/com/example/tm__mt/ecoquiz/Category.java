@@ -1,7 +1,15 @@
 package com.example.tm__mt.ecoquiz;
 
+/**
+ * Created by tm__mt
+ *
+ * Holds a structure of Category table and provides basic functions/queries to that table.
+ */
 public class Category {
     private int id;
+
+    private static final String COL_ID = "ID";
+    private static final String COL_NAME = "NAME";
 
     private static final String TB_NAME = "Category";
     private static final String CREATE_QUERY = "CREATE TABLE IF NOT EXISTS " + getTbName() + " ( "
@@ -12,6 +20,7 @@ public class Category {
     private static final String INSERT_QUERY = "INSERT INTO " + getTbName() + " VALUES "
             + " (1,'Food')"
             + ",(2,'Environment')"
+            + ",(3,'Organizations')"
             + ";";
     private static final String DROP_QUERY = "DROP " + getTbName() + " TABLE;";
 
@@ -29,6 +38,14 @@ public class Category {
 
     public static String getTbName() {
         return TB_NAME;
+    }
+
+    public static String getColId() {
+        return COL_ID;
+    }
+
+    public static String getColName() {
+        return COL_NAME;
     }
 
     public int getId() {

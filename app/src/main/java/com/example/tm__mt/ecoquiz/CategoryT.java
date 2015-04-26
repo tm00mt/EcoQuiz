@@ -23,6 +23,8 @@ public class CategoryT {
             + ",(1,2,'Jedzenie')"
             + ",(2,1,'Environment')"
             + ",(2,2,'Środowisko')"
+            + ",(3,1,'Organizations')"
+            + ",(3,2,'Organizacje')"
             + ";";
     private static final String DROP_QUERY = "DROP " + getTbName() + " TABLE;";
 

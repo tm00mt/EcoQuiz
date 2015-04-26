@@ -1,19 +1,28 @@
 package com.example.tm__mt.ecoquiz;
 
+import android.app.ListActivity;
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
 import android.widget.Toast;
-import java.util.Locale;
+import java.util.ArrayList;
+import java.util.List;
 
-public class CategoryActivity extends ActionBarActivity {
+/**
+ * Created by tm__mt
+ *
+ * Displays all available categories.
+ *
+ * If any category was clicked then quiz should be started (first question is shown on a screen)
+ */
+public class CategoryActivity extends ListActivity {
     private static final String DEBUG_TAG = "CategoryActivity";
 
-    TextView tvCategory1, tvCategory2;
+    private List<String> categoriesList;
+    EcoQuizDBHelper DBHelper = new EcoQuizDBHelper(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -22,50 +31,38 @@ public class CategoryActivity extends ActionBarActivity {
 
         Log.d(DEBUG_TAG, "Creating CategoryActivity...");
 
-        //todo content of this activity should be generated dynamicly
-        //prepare SQL query to select all categories from DB
-
-        tvCategory1 = (TextView) findViewById(R.id.tvCategory1);
-        tvCategory2 = (TextView) findViewById(R.id.tvCategory2);
-
-        tvCategory1.setOnClickListener(categoryClickListener);
-        tvCategory2.setOnClickListener(categoryClickListener);
+        categoriesList  = new ArrayList<>();
+        categoriesList = DBHelper.getCategories(ApplicationSettings.getLanguage());
+        ArrayAdapter<String> myAdapter = new ArrayAdapter <>(this,
+                R.layout.category_row_item, R.id.tvCategoryName, categoriesList);
+        setListAdapter(myAdapter);
     }
 
     @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
+    protected void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
 
-        ApplicationSettings.setLanguage(Locale.getDefault().getISO3Language());
-    }
+        Log.d(DEBUG_TAG, "Item was clicked!!!" + position);
 
-    private View.OnClickListener categoryClickListener = new View.OnClickListener() {
+        int questionNumber = 1;
+        NextQuestion nextQuestion = new NextQuestion(questionNumber,
+                                                     DBHelper.getCategoryId(position),
+                                                     ApplicationSettings.getLanguage(),
+                                                     ApplicationSettings.getScreenDensity());
 
-        @Override
-        public void onClick(View v) {
+        // todo nietestowane!!!!!!!!!!!!!!!!
+        if (nextQuestion.prepareFirst(CategoryActivity.this)) {
+            Intent i;
+            if (ApplicationSettings.getPathSource() == ApplicationSettings.PATH_SRC_LOCAL)
+                i = new Intent(CategoryActivity.this, QuestionActivity.class);
+            else
+                i = new Intent(CategoryActivity.this, PreQuestionActivity.class);
 
-            int l = ApplicationSettings.getLanguage();
-            NextQuestion nextQuestion;
-
-            switch (v.getId()) {
-                case R.id.tvCategory1:
-                    nextQuestion = new NextQuestion(1,1,l,1);
-                    break;
-                case R.id.tvCategory2:
-                    nextQuestion = new NextQuestion(1,2,l,1);
-                    break;
-                default:
-                    nextQuestion = new NextQuestion(1,1,1,1);
-            }
-
-            if (nextQuestion.prepareFirst(CategoryActivity.this)) {
-                Intent i = new Intent(CategoryActivity.this, PreQuestionActivity.class);
-                i.putExtra("questionData", nextQuestion);
-                startActivity(i);
-            } else {
-                Toast.makeText(CategoryActivity.this, "No (more) data in DB.", Toast.LENGTH_SHORT).show();
-                finish();
-            }
+            i.putExtra("questionData", nextQuestion);
+            startActivity(i);
+        } else {
+            Toast.makeText(CategoryActivity.this, "No (more) data in DB.", Toast.LENGTH_SHORT).show();
+            //finish();
         }
-    };
+    }
 }

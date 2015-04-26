@@ -24,7 +24,9 @@ public class MainActivity extends ActionBarActivity {
 
         Log.d(DEBUG_TAG, "Creating MainActivity....");
 
-        ApplicationSettings.setLanguage(Locale.getDefault().getISO3Language());
+        new ApplicationSettings(getApplicationContext());
+
+        //ApplicationSettings.setLanguage(Locale.getDefault().getISO3Language());
 
         tvStartQuiz = (TextView) findViewById(R.id.tvStartQuiz);
         tvResults = (TextView) findViewById(R.id.tvResults);
@@ -33,12 +35,12 @@ public class MainActivity extends ActionBarActivity {
         tvResults.setOnClickListener(optionClickListener);
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
-        ApplicationSettings.setLanguage(Locale.getDefault().getISO3Language());
-    }
+    //@Override
+    //public void onConfigurationChanged(Configuration newConfig) {
+    //    super.onConfigurationChanged(newConfig);
+    //
+    //    ApplicationSettings.setLanguage(Locale.getDefault().getISO3Language());
+    //}
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

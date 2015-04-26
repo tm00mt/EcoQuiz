@@ -9,6 +9,7 @@ import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -25,6 +26,8 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
     private ArrayList<ResultRow> resultDataRR;
     private ArrayList<Integer> correctAnswers;
     private ArrayList<RankingRow> rankingDataRR;
+    private List<String> categoryNames;
+    private List<Integer> categoryIds;
 
     private Map categories;
 
@@ -364,5 +367,44 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
         DB.execSQL(query);
 
         Log.d(DEBUG_TAG, "Saving new Ranking row; query: " + query);
+    }
+
+    public List<String> getCategories(int language) {
+        categoryNames =  new ArrayList<>();
+        categoryIds = new ArrayList<>();
+
+        DB = this.getReadableDatabase();
+        String query =
+                "SELECT TCT." + CategoryT.getColName() + " "
+                   + ", TCT." + CategoryT.getColCategoryId() + " "
+              + "FROM "
+                          + CategoryT.getTbName() + " TCT "
+                   + ", " + Category.getTbName() + " TC "
+                   + ", " + Lang.getTbName() + " TL "
+              + "WHERE "
+                   +     "TCT." + CategoryT.getColCategoryId() + " = TC." + Category.getColId() + " "
+                   + "AND TCT." + CategoryT.getColLangId() + " = TL." + Lang.getColId() + " "
+                   + "AND TCT." + CategoryT.getColLangId() + " = ? ";
+
+        Cursor c = DB.rawQuery(query, new String[] { Integer.toString(language)});
+        c.moveToFirst();
+        if (c.getCount() > 0) {
+            while (!c.isAfterLast()) {
+                Log.d(DEBUG_TAG, "Category: " + c.getString(0));
+                categoryNames.add(c.getString(0));
+                categoryIds.add(c.getInt(1));
+                c.moveToNext();
+            }
+        }
+        c.close();
+
+        return categoryNames;
+    }
+
+    public int getCategoryId(int position) {
+        if (!categoryIds.isEmpty() && position >= 0 && position < categoryIds.size())
+            return categoryIds.get(position);
+
+        return -1;
     }
 }

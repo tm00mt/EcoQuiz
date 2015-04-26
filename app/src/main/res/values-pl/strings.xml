@@ -8,6 +8,7 @@
 
     <string name="option_start_quiz">Rozpocznij Quiz</string>
     <string name="option_results">Tabela wyników</string>
+    <string name="header_categories">Kategorie</string>
     <string name="user_name_dialog">Podaj swoje imię:</string>
 
     <!-- Descriptions of ImageViews widgets in QuestionActivity -->

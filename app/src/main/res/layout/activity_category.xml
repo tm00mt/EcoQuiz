@@ -6,14 +6,14 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Category1"
-        android:textSize="30dp"
-        android:id="@+id/tvCategory1" />
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/header_categories"
+        android:id="@+id/tvCategories"
+        android:layout_gravity="center_horizontal" />
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Category2"
-        android:textSize="30dp"
-        android:id="@+id/tvCategory2" />
+    <ListView
+        android:id="@android:id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+
 </LinearLayout>
