@@ -5,7 +5,14 @@ package com.example.tm__mt.ecoquiz;
  *
  * Holds a structure of Answer table and provides basic functions/queries to that table.
  */
-public class Answer {
+public class TAnswer {
+    //table structure: table and column names
+    private static final String TABLE_NAME          = "Answer";
+    private static final String COL_ATTEMPT_CNTR    = "ATTEMPT_CNTR";
+    private static final String COL_CATEGORY_ID     = "CATEGORY_ID";
+    private static final String COL_QUESTION_NUM    = "QUESTION_NUM";
+    private static final String COL_GIVEN_ANSWER    = "GIVEN_ANSWER";
+    private static final String COL_ANSWER_TIME     = "ANSWER_TIME";
 
     private int attemptCntr;
     private int categoryId;
@@ -13,14 +20,7 @@ public class Answer {
     private int givenAnswer;
     private String answerTime;
 
-    private static final String COL_ATTEMPT_CNTR = "ATTEMPT_CNTR";
-    private static final String COL_CATEGORY_ID = "CATEGORY_ID";
-    private static final String COL_QUESTION_NUM = "QUESTION_NUM";
-    private static final String COL_GIVEN_ANSWER = "GIVEN_ANSWER";
-    private static final String COL_ANSWER_TIME = "ANSWER_TIME";
-
-    private static final String TB_NAME = "Answer";
-    private static final String CREATE_QUERY = "CREATE TABLE IF NOT EXISTS " + getTbName() + " ( "
+    private static final String CREATE_QUERY = "CREATE TABLE IF NOT EXISTS " + getTableName() + " ( "
             + " ATTEMPT_CNTR      INTEGER NOT NULL "
             + ",CATEGORY_ID       INTEGER NOT NULL "
             + ",QUESTION_NUM      TEXT NOT NULL"
@@ -31,10 +31,10 @@ public class Answer {
             + ",FOREIGN KEY(`QUESTION_NUM`) REFERENCES Question(ID)"
             + ");";
     private static final String INSERT_QUERY = "";
-    private static final String DROP_QUERY = "DROP " + getTbName() + " TABLE;";
+    private static final String DROP_QUERY = "DROP " + getTableName() + " TABLE;";
 
-    public static String getTbName() {
-        return TB_NAME;
+    public static String getTableName() {
+        return TABLE_NAME;
     }
 
     public static String getCreateQuery() {
@@ -70,7 +70,7 @@ public class Answer {
     }
 
     public int getAttemptCntr() {
-        return attemptCntr;
+        return this.attemptCntr;
     }
 
     public void setAttemptCntr(int attemptCntr) {
@@ -78,7 +78,7 @@ public class Answer {
     }
 
     public int getCategoryId() {
-        return categoryId;
+        return this.categoryId;
     }
 
     public void setCategoryId(int categoryId) {
@@ -86,7 +86,7 @@ public class Answer {
     }
 
     public int getQuestionNum() {
-        return questionNum;
+        return this.questionNum;
     }
 
     public void setQuestionNum(int questionNum) {
@@ -94,7 +94,7 @@ public class Answer {
     }
 
     public int getGivenAnswer() {
-        return givenAnswer;
+        return this.givenAnswer;
     }
 
     public void setGivenAnswer(int givenAnswer) {
@@ -102,7 +102,7 @@ public class Answer {
     }
 
     public String getAnswerTime() {
-        return answerTime;
+        return this.answerTime;
     }
 
     public void setAnswerTime(String answerTime) {

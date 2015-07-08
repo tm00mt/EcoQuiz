@@ -23,4 +23,11 @@
     <string name="string_answer_correct">Dobrze</string>
     <string name="string_answer_wrong">Źle</string>
 
+    <!-- Error/warning/info messages -->
+    <string name="category_without_questions">Brak pytań z tej kategorii.</string>
+    <string name="no_internet_connection">Brak połączenia z internetem.</string>
+    <string name="new_record">Gratulacje! Nowy rekord!</string>
+    <string name="no_data_to_display">Brak danych do wyświetlenia</string>
+    <string name="downloading_to_long">Pobieranie grafik trwa zbyt długo. Spróbuj ponownie później.</string>
+
 </resources>

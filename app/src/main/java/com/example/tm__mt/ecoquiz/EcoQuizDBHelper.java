@@ -4,7 +4,6 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.text.Editable;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -39,33 +38,39 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         Log.d(DEBUG_TAG, "Database " + DB_NAME + " ver. " + DB_VERSION + " creating...");
 
-        db.execSQL(Lang.getCreateQuery());
-        db.execSQL(Lang.getInsertQuery());
-        Log.d(DEBUG_TAG, "Table " + Lang.getTbName() + " created.");
+        db.execSQL(TLang.getCreateQuery());
+        Log.d(DEBUG_TAG, "Table " + TLang.getTableName() + " created!");
 
-        db.execSQL(Category.getCreateQuery());
-        db.execSQL(Category.getInsertQuery());
-        Log.d(DEBUG_TAG, "Table " + Category.getTbName() + " created.");
+        db.execSQL(TCategory.getCreateQuery());
+        Log.d(DEBUG_TAG, "Table " + TCategory.getTableName() + " created.");
 
-        db.execSQL(CategoryT.getCreateQuery());
-        db.execSQL(CategoryT.getInsertQuery());
-        Log.d(DEBUG_TAG, "Table " + CategoryT.getTbName() + " created.");
+        db.execSQL(TCategoryTranslation.getCreateQuery());
+        Log.d(DEBUG_TAG, "Table " + TCategoryTranslation.getTableName() + " created.");
 
-        db.execSQL(Question.getCreateQuery());
-        db.execSQL(Question.getInsertQuery());
-        Log.d(DEBUG_TAG, "Table " + Question.getTbName() + " created.");
+        db.execSQL(TQuestion.getCreateQuery());
+        Log.d(DEBUG_TAG, "Table " + TQuestion.getTableName() + " created.");
 
-        db.execSQL(QuestionT.getCreateQuery());
-        db.execSQL(QuestionT.getInsertQuery());
-        Log.d(DEBUG_TAG, "Table " + QuestionT.getTbName() + " created.");
+        db.execSQL(TQuestionTranslation.getCreateQuery());
+        Log.d(DEBUG_TAG, "Table " + TQuestionTranslation.getTableName() + " created.");
 
-        db.execSQL(Answer.getCreateQuery());
-        Log.d(DEBUG_TAG, "Table " + Answer.getTbName() + " created.");
+        db.execSQL(TQuestionWebPath.getCreateQuery());
+        Log.d(DEBUG_TAG, "Table " + TQuestionWebPath.getTableName() + " created.");
 
-        db.execSQL(Ranking.getCreateQuery());
-        Log.d(DEBUG_TAG, "Table " + Ranking.getTbName() + " created.");
+        //db.execSQL(TQuestionLocalPath.getCreateQuery());
+        //Log.d(DEBUG_TAG, "Table " + TQuestionLocalPath.getTableName() + " created.");
 
-        Log.d(DEBUG_TAG, "Database " + DB_NAME + " created!!!");
+        db.execSQL(TAnswer.getCreateQuery());
+        Log.d(DEBUG_TAG, "Table " + TAnswer.getTableName() + " created.");
+
+        db.execSQL(TRanking.getCreateQuery());
+        Log.d(DEBUG_TAG, "Table " + TRanking.getTableName() + " created.");
+
+        if (!initializeTablesContent(db)) {
+            Log.e(DEBUG_TAG, "Error. Not all data are inserted into tables!!!");
+        } else {
+            Log.d(DEBUG_TAG, "Database " + DB_NAME + " created!!!");
+        }
+
     }
 
     @Override
@@ -82,25 +87,39 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
             default:
                 //ERROR
         }
-
-
-        //db.execSQL(TB_QUIZ_DROP);
-
-
-
-        //onCreate(db);
     }
 
     public String[] getLogoLinks(int category, int questionNumber, int langId) {
         Log.d(DEBUG_TAG, "Getting logo links from DB");
         String[] logoLinks = new String[6];
 
+        String query;
+
+        if (true) {
+            //gets logo links from web
+            query = "SELECT "
+                    +              TQuestionWebPath.getColPath1()
+                    + ", "       + TQuestionWebPath.getColPath2()
+                    + ", "       + TQuestionWebPath.getColPath3()
+                    + ", "       + TQuestionWebPath.getColPath4()
+                    + ", "       + TQuestionWebPath.getColPath5()
+                    + ", "       + TQuestionWebPath.getColPath6()
+                    + " FROM "
+                    +              TQuestionWebPath.getTableName() + " t1 "
+                    + ", "       + TQuestion.getTableName() + " t2 "
+                    + " WHERE "
+                    +     " t2." + TQuestion.getColId() + "=t1." + TQuestionWebPath.getColQuestionId()
+                    + " AND t2." + TQuestion.getColCategoryId() + "=?"
+                    + " AND t2." + TQuestion.getColQuestionNum() + "=?";
+        }
+
         DB = this.getReadableDatabase();
-        Cursor c = DB.rawQuery("SELECT AD1PATH, AD2PATH, AD3PATH, AD4PATH, AD5PATH, AD6PATH FROM " + QuestionT.getTbName()
-                + " WHERE " + QuestionT.getColLangId() + " = ? AND " + QuestionT.getColQuestionId()
-                + " = ( SELECT " + Question.getColId() + " FROM " + Question.getTbName()
-                + " WHERE " + Question.getColCategoryId() + " = ? AND " + Question.getColQuestionNum() + " = ? )"
-                , new String[] { Integer.toString(langId), Integer.toString(category), Integer.toString(questionNumber) });
+        //Cursor c = DB.rawQuery("SELECT AD1PATH, AD2PATH, AD3PATH, AD4PATH, AD5PATH, AD6PATH FROM " + TQuestionTranslation.getTableName()
+        //        + " WHERE " + TQuestionTranslation.getColLangId() + " = ? AND " + TQuestionTranslation.getColQuestionId()
+        //        + " = ( SELECT " + TQuestion.getColId() + " FROM " + TQuestion.getTableName()
+        //        + " WHERE " + TQuestion.getColCategoryId() + " = ? AND " + TQuestion.getColQuestionNum() + " = ? )"
+        //        , new String[] { Integer.toString(langId), Integer.toString(category), Integer.toString(questionNumber) });
+        Cursor c = DB.rawQuery(query, new String[] { Integer.toString(category), Integer.toString(questionNumber) });
 
         c.moveToFirst();
         while (!c.isAfterLast() && c.getCount() > 0) {
@@ -120,16 +139,16 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
         Log.d(DEBUG_TAG, "Getting question from DB");
         String question = "";
 
-        String query = "SELECT " + QuestionT.getColQuestion() + " FROM " + QuestionT.getTbName()
-                + " WHERE " + QuestionT.getColLangId() + " = " + Integer.toString(langId) + " AND "
-                + QuestionT.getColQuestionId() + " = ( SELECT " + Question.getColId() + " FROM " + Question.getTbName()
-                + " WHERE " + Question.getColCategoryId() + " = " + Integer.toString(category) + " AND " + Question.getColQuestionNum() + " = " + Integer.toString(questionNumber) + " )";
+        String query = "SELECT " + TQuestionTranslation.getColQuestion() + " FROM " + TQuestionTranslation.getTableName()
+                + " WHERE " + TQuestionTranslation.getColLangId() + " = " + Integer.toString(langId) + " AND "
+                + TQuestionTranslation.getColQuestionId() + " = ( SELECT " + TQuestion.getColId() + " FROM " + TQuestion.getTableName()
+                + " WHERE " + TQuestion.getColCategoryId() + " = " + Integer.toString(category) + " AND " + TQuestion.getColQuestionNum() + " = " + Integer.toString(questionNumber) + " )";
 
         DB = this.getReadableDatabase();
-        Cursor c = DB.rawQuery("SELECT " + QuestionT.getColQuestion() + " FROM " + QuestionT.getTbName()
-                + " WHERE " + QuestionT.getColLangId() + " = ? AND "
-                + QuestionT.getColQuestionId() + " = ( SELECT " + Question.getColId() + " FROM " + Question.getTbName()
-                + " WHERE " + Question.getColCategoryId() + " = ? AND " + Question.getColQuestionNum() + " = ? )"
+        Cursor c = DB.rawQuery("SELECT " + TQuestionTranslation.getColQuestion() + " FROM " + TQuestionTranslation.getTableName()
+                + " WHERE " + TQuestionTranslation.getColLangId() + " = ? AND "
+                + TQuestionTranslation.getColQuestionId() + " = ( SELECT " + TQuestion.getColId() + " FROM " + TQuestion.getTableName()
+                + " WHERE " + TQuestion.getColCategoryId() + " = ? AND " + TQuestion.getColQuestionNum() + " = ? )"
                 , new String[] { Integer.toString(langId), Integer.toString(category), Integer.toString(questionNumber) });
 
         Log.d(DEBUG_TAG, "Question: " + query);
@@ -147,8 +166,8 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
         int correctAnswer = 0;
 
         DB = this.getReadableDatabase();
-        Cursor c = DB.rawQuery("SELECT " + Question.getColCorrectAnswer() + " FROM " + Question.getTbName()
-                + " WHERE " + Question.getColCategoryId() + " = ? AND " + Question.getColQuestionNum() + " = ?"
+        Cursor c = DB.rawQuery("SELECT " + TQuestion.getColCorrectAnswer() + " FROM " + TQuestion.getTableName()
+                + " WHERE " + TQuestion.getColCategoryId() + " = ? AND " + TQuestion.getColQuestionNum() + " = ?"
                 , new String[] { Integer.toString(category), Integer.toString(questionNumber) });
 
         c.moveToFirst();
@@ -163,16 +182,14 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
         Log.d(DEBUG_TAG, "Saving given answer to DB");
 
         DB = this.getWritableDatabase();
-        String query = "INSERT INTO " + Answer.getTbName() + " VALUES ("
-                +        attemptCntr
-                + ", " + category
-                + ", " + questionNumber
-                + ", " + answerGiven
+        String query =   "INSERT INTO " + TAnswer.getTableName() + " VALUES ("
+                +         attemptCntr
+                + ", "  + category
+                + ", "  + questionNumber
+                + ", "  + answerGiven
                 + ", '" + time + "'"
                 + ")";
         DB.execSQL(query);
-
-        Log.d(DEBUG_TAG, "Saving answer; query: " + query);
 
         return true;
     }
@@ -182,9 +199,11 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
         int cntr = 0;
 
         DB = this.getReadableDatabase();
-        Cursor c = DB.rawQuery("SELECT MAX(" + Answer.getColAttemptCntr() + ") FROM " + Answer.getTbName()
-                + " WHERE " + Answer.getColCategoryId() + " = ?"
-                , new String[] { Integer.toString(category) });
+        Cursor c = DB.rawQuery(
+                "SELECT MAX(" + TAnswer.getColAttemptCntr() + ") "
+              +  " FROM " + TAnswer.getTableName()
+              + " WHERE " + TAnswer.getColCategoryId() + " = ?"
+              , new String[] { Integer.toString(category) });
 
         c.moveToFirst();
         if (c.getCount() > 0)
@@ -201,18 +220,18 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
 
         DB = this.getReadableDatabase();
         Cursor c = DB.rawQuery(
-                "SELECT TQ." + Question.getColQuestionNum()
-                   + ", TA." + Answer.getColGivenAnswer()
-                   + ", TQ." + Question.getColCorrectAnswer()
-                   + ", TA." + Answer.getColAnswerTime()
+                "SELECT TQ." + TQuestion.getColQuestionNum()
+                   + ", TA." + TAnswer.getColGivenAnswer()
+                   + ", TQ." + TQuestion.getColCorrectAnswer()
+                   + ", TA." + TAnswer.getColAnswerTime()
                 + " FROM "
-                             + Answer.getTbName() + " TA "
-                   + ", "    + Question.getTbName() + " TQ"
+                             + TAnswer.getTableName() + " TA "
+                   + ", "    + TQuestion.getTableName() + " TQ"
                 + " WHERE "
-                       + " TA." + Answer.getColCategoryId() + " = ?"
-                   + " AND TA." + Answer.getColAttemptCntr() + " = ?"
-                   + " AND TA." + Answer.getColCategoryId() + " = TQ." + Question.getColCategoryId()
-                   + " AND TA." + Answer.getColQuestionNum() + " = TQ." + Question.getColQuestionNum()
+                       + " TA." + TAnswer.getColCategoryId() + " = ?"
+                   + " AND TA." + TAnswer.getColAttemptCntr() + " = ?"
+                   + " AND TA." + TAnswer.getColCategoryId() + " = TQ." + TQuestion.getColCategoryId()
+                   + " AND TA." + TAnswer.getColQuestionNum() + " = TQ." + TQuestion.getColQuestionNum()
                 , new String[] { Integer.toString(category), Integer.toString(attempt) });
 
         c.moveToFirst();
@@ -249,12 +268,12 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
 
         DB = this.getReadableDatabase();
         Cursor c = DB.rawQuery(
-                "SELECT "      + CategoryT.getColCategoryId() + " "
-                        + ", " + CategoryT.getColName() + " "
+                "SELECT "      + TCategoryTranslation.getColCategoryId() + " "
+                        + ", " + TCategoryTranslation.getColName() + " "
               + "FROM "
-                               + CategoryT.getTbName() + " "
+                               + TCategoryTranslation.getTableName() + " "
               + "WHERE "
-                               + CategoryT.getColLangId() + " = ?"
+                               + TCategoryTranslation.getColLangId() + " = ?"
               , new String[] { Integer.toString(lang) });
 
         c.moveToFirst();
@@ -285,15 +304,15 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
         DB = this.getReadableDatabase();
         Cursor c = DB.rawQuery(
                 "SELECT "
-                           + Ranking.getColName()
-                    + ", " + Ranking.getColScore()
-                    + ", " + Ranking.getColTime()
-                    + ", " + Ranking.getColAttemptCntr()
+                           + TRanking.getColName()
+                    + ", " + TRanking.getColScore()
+                    + ", " + TRanking.getColTime()
+                    + ", " + TRanking.getColAttemptCntr()
               + " FROM "
-                           + Ranking.getTbName()
+                           + TRanking.getTableName()
               + " WHERE "
-                        + Ranking.getColCategoryId() + " = ?"
-              + " ORDER BY " + Ranking.getColScore() + " DESC, " + Ranking.getColTime() + " ASC"
+                        + TRanking.getColCategoryId() + " = ?"
+              + " ORDER BY " + TRanking.getColScore() + " DESC, " + TRanking.getColTime() + " ASC"
               , new String[] { Integer.toString(categoryId) });
 
         c.moveToFirst();
@@ -325,14 +344,14 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
         String query =
                 "SELECT COUNT(*) "
               + "FROM "
-                       + Question.getTbName() + " TQ "
-                + ", " + Answer.getTbName() + " TA "
+                       + TQuestion.getTableName() + " TQ "
+                + ", " + TAnswer.getTableName() + " TA "
               + "WHERE "
-                    + "TQ." + Question.getColCategoryId() + " = TA." + Answer.getColCategoryId() + " "
-                + "AND TQ." + Question.getColQuestionNum() + " = TA." + Answer.getColQuestionNum() + " "
-                + "AND TA." + Answer.getColCategoryId() + " = ? "
-                + "AND TA." + Answer.getColAttemptCntr() + " = ? "
-                + "AND TQ." + Question.getColCorrectAnswer() + " = TA." + Answer.getColGivenAnswer();
+                    + "TQ." + TQuestion.getColCategoryId() + " = TA." + TAnswer.getColCategoryId() + " "
+                + "AND TQ." + TQuestion.getColQuestionNum() + " = TA." + TAnswer.getColQuestionNum() + " "
+                + "AND TA." + TAnswer.getColCategoryId() + " = ? "
+                + "AND TA." + TAnswer.getColAttemptCntr() + " = ? "
+                + "AND TQ." + TQuestion.getColCorrectAnswer() + " = TA." + TAnswer.getColGivenAnswer();
 
         Cursor c = DB.rawQuery(query, new String[] { Integer.toString(categoryId), Integer.toString(attemptNr) });
         c.moveToFirst();
@@ -343,12 +362,12 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
 
         String time = "00:00:00.000";
         query =
-                "SELECT MAX(" + Answer.getColAnswerTime() + ") "
+                "SELECT MAX(" + TAnswer.getColAnswerTime() + ") "
               + "FROM "
-                       + Answer.getTbName() + " "
+                       + TAnswer.getTableName() + " "
               + "WHERE "
-                       + Answer.getColCategoryId() + " = ? "
-              + "AND " + Answer.getColAttemptCntr() + " = ?";
+                       + TAnswer.getColCategoryId() + " = ? "
+              + "AND " + TAnswer.getColAttemptCntr() + " = ?";
         c = DB.rawQuery(query, new String[] { Integer.toString(categoryId), Integer.toString(attemptNr) });
         c.moveToFirst();
         if (c.getCount() > 0) {
@@ -357,7 +376,7 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
         c.close();
 
         DB = this.getWritableDatabase();
-        query = "INSERT INTO " + Ranking.getTbName() + " VALUES ("
+        query = "INSERT INTO " + TRanking.getTableName() + " VALUES ("
                 +         attemptNr
                 + ", "  + categoryId
                 + ", '" + name + "'"
@@ -375,16 +394,16 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
 
         DB = this.getReadableDatabase();
         String query =
-                "SELECT TCT." + CategoryT.getColName() + " "
-                   + ", TCT." + CategoryT.getColCategoryId() + " "
+                "SELECT TCT." + TCategoryTranslation.getColName() + " "
+                   + ", TCT." + TCategoryTranslation.getColCategoryId() + " "
               + "FROM "
-                          + CategoryT.getTbName() + " TCT "
-                   + ", " + Category.getTbName() + " TC "
-                   + ", " + Lang.getTbName() + " TL "
+                          + TCategoryTranslation.getTableName() + " TCT "
+                   + ", " + TCategory.getTableName() + " TC "
+                   + ", " + TLang.getTableName() + " TL "
               + "WHERE "
-                   +     "TCT." + CategoryT.getColCategoryId() + " = TC." + Category.getColId() + " "
-                   + "AND TCT." + CategoryT.getColLangId() + " = TL." + Lang.getColId() + " "
-                   + "AND TCT." + CategoryT.getColLangId() + " = ? ";
+                   +     "TCT." + TCategoryTranslation.getColCategoryId() + " = TC." + TCategory.getColId() + " "
+                   + "AND TCT." + TCategoryTranslation.getColLangId() + " = TL." + TLang.getColId() + " "
+                   + "AND TCT." + TCategoryTranslation.getColLangId() + " = ? ";
 
         Cursor c = DB.rawQuery(query, new String[] { Integer.toString(language)});
         c.moveToFirst();
@@ -406,5 +425,130 @@ public class EcoQuizDBHelper extends SQLiteOpenHelper {
             return categoryIds.get(position);
 
         return -1;
+    }
+
+    private boolean initializeTablesContent(SQLiteDatabase db) {
+        String query;
+        int i;
+        int cntr;
+        //--------------------------------------------------------------------------------Lang table
+        int langNumber = 2;
+        String langContent[] = {"en", "pl"};
+        i = 1;
+        TLang tl;
+        for (; i<=langNumber && langContent.length==langNumber; i++) {
+            tl = new TLang(i, langContent[i-1]);
+            query = tl.insertQuery();
+            if (query == null)
+                break;
+
+            db.execSQL(query);
+        }
+        if ( i <= langNumber ) {
+            Log.e(DEBUG_TAG, "Error while inserting values into " + TLang.getTableName() + " table!");
+            return false;
+        } else
+            Log.d(DEBUG_TAG, "Values inserted into " + TLang.getTableName() + " table!");
+        //----------------------------------------------------------------------------Category table
+        int categoryNumber = 3;
+        String categoryContent[] = {"Food", "Environment", "Organizations"};
+        i = 1;
+        TCategory tc;
+        for (; i<=categoryNumber && categoryContent.length==categoryNumber; i++) {
+            tc = new TCategory(i, categoryContent[i-1]);
+            query = tc.insertQuery();
+            if (query == null)
+                break;
+
+            db.execSQL(query);
+        }
+        if ( i <= categoryNumber ) {
+            Log.e(DEBUG_TAG, "Error while inserting values into " + TCategory.getTableName() + " table!");
+            return false;
+        } else
+            Log.d(DEBUG_TAG, "Values inserted into " + TCategory.getTableName() + " table!");
+        //-----------------------------------------------------------------CategoryTranslation table
+        int categoryTranslationNumber = categoryNumber * langNumber;
+        String categoryTranslationContent[][] = {
+                 {"Food",           "Jedzenie"}
+                ,{"Environment",    "Środowisko"}
+                ,{"Organizations",  "Organizacje"}
+        };
+        i = 1;
+        cntr = 0;
+        TCategoryTranslation tct;
+        for (; i<=categoryNumber; i++) {
+            for (int j=1; j<=langNumber; j++) {
+                tct = new TCategoryTranslation(i, j, categoryTranslationContent[i-1][j-1]);
+                query = tct.insertQuery();
+                Log.d(DEBUG_TAG, query);
+                if (query == null)
+                    break;
+
+                db.execSQL(query);
+                cntr++;
+            }
+        }
+        if ( cntr != categoryTranslationNumber ) {
+            Log.e(DEBUG_TAG, "Error while inserting values into " + TCategoryTranslation.getTableName() + " table!");
+            return false;
+        } else
+            Log.d(DEBUG_TAG, "Values inserted into " + TCategoryTranslation.getTableName() + " table!");
+        //----------------------------------------------------------------------------Question table
+        int questionNumber = TQuestion.getValuesNumber();
+        i = 1;
+        for (; i<=questionNumber; i++) {
+                query = TQuestion.insertQuery(i-1);
+                if (query == null)
+                    break;
+
+                db.execSQL(query);
+        }
+        if ( i <= questionNumber ) {
+            Log.e(DEBUG_TAG, "Error while inserting values into " + TQuestion.getTableName() + " table!");
+            return false;
+        } else
+            Log.d(DEBUG_TAG, "Values inserted into " + TQuestion.getTableName() + " table!");
+        //-----------------------------------------------------------------QuestionTranslation table
+        int questionTranslationNumber = TQuestionTranslation.getValuesNumber();
+        if ( questionTranslationNumber != questionNumber*langNumber ) {
+            Log.e(DEBUG_TAG, "Wrong number of records to be inserted into " + TQuestion.getTableName() + " table!");
+            return false;
+        }
+        i = 1;
+        for (; i<=questionTranslationNumber; i++) {
+            query = TQuestionTranslation.insertQuery(i-1);
+            if (query == null)
+                break;
+
+            db.execSQL(query);
+        }
+        if ( i <= questionTranslationNumber ) {
+            Log.e(DEBUG_TAG, "Error while inserting values into " + TQuestionTranslation.getTableName() + " table!");
+            return false;
+        } else
+            Log.d(DEBUG_TAG, "Values inserted into " + TQuestionTranslation.getTableName() + " table!");
+        //-----------------------------------------------------------------QuestionTranslation table
+        int questionWebPathNumber = TQuestionWebPath.getValuesNumber();
+        if ( questionWebPathNumber != questionNumber ) {
+            Log.e(DEBUG_TAG, "Wrong number of records to be inserted into " + TQuestionWebPath.getTableName() + " table!");
+            return false;
+        }
+        i = 1;
+        for (; i<=questionWebPathNumber; i++) {
+            query = TQuestionWebPath.insertQuery(i-1);
+            if (query == null)
+                break;
+
+            db.execSQL(query);
+        }
+        if ( i <= questionWebPathNumber ) {
+            Log.e(DEBUG_TAG, "Error while inserting values into " + TQuestionWebPath.getTableName() + " table!");
+            return false;
+        } else
+            Log.d(DEBUG_TAG, "Values inserted into " + TQuestionWebPath.getTableName() + " table!");
+
+
+        return true;
     }
 }

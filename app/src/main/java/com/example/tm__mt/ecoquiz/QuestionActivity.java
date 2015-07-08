@@ -2,15 +2,13 @@ package com.example.tm__mt.ecoquiz;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.graphics.PorterDuff;
-import android.graphics.drawable.Drawable;
+import android.graphics.drawable.NinePatchDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.SystemClock;
-import android.support.v7.app.ActionBarActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
@@ -18,25 +16,32 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+/**
+ * Created by tm__mt
+ *
+ * Displays single question on a screen and prepares next question data for next QuestionActivity
+ *
+ */
 public class QuestionActivity extends Activity {
     private static final String DEBUG_TAG = "QuestionActivity";
+
     private static final int LOGOS_NUM = 6;
 
     private LogoDownloader[] logos = new LogoDownloader[LOGOS_NUM];
-    private boolean logosLoaded = false;
-    private boolean answerClicked = false;
+    private boolean logosLoaded    = false;
+    private boolean answerClicked  = false;
     private boolean isLastQuestion = false;
 
-    private long startTime = 0;
-    private long endTime = 0;
+    private long startTime   = 0;
+    //private long endTime     = 0;
     private long elapsedTime = 0;
 
-    TextView tvQuestion;
+    TextView    tvQuestion;
     FrameLayout flBorder;
-    boolean doHighlight;
-    int answerGiven;
+    boolean     doHighlight;
+    int         answerGiven;
     ImageView ivLogo1, ivLogo2, ivLogo3, ivLogo4, ivLogo5, ivLogo6;
-    NextQuestion currentQuestion, nextQuestion;
+    SingleQuestionData currentQuestion, nextQuestion;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -70,18 +75,34 @@ public class QuestionActivity extends Activity {
         tvQuestion.setText(currentQuestion.getQuestion());
 
         //display logos on a screen
-        ivLogo1.setImageBitmap(BitmapFactory.decodeFile(currentQuestion.getBitmapPath(0)));
-        ivLogo2.setImageBitmap(BitmapFactory.decodeFile(currentQuestion.getBitmapPath(1)));
-        ivLogo3.setImageBitmap(BitmapFactory.decodeFile(currentQuestion.getBitmapPath(2)));
-        ivLogo4.setImageBitmap(BitmapFactory.decodeFile(currentQuestion.getBitmapPath(3)));
-        ivLogo5.setImageBitmap(BitmapFactory.decodeFile(currentQuestion.getBitmapPath(4)));
-        ivLogo6.setImageBitmap(BitmapFactory.decodeFile(currentQuestion.getBitmapPath(5)));
+        //do a lot of stuff to display 9patch logos on a screen
+        NinePatchDrawable npd;
+        Bitmap bm;
+        bm = BitmapFactory.decodeFile(currentQuestion.getBitmapPath(0));
+        npd = NinePatchBitmapFactory.createNinePatchDrawable(getResources(), bm);
+        ivLogo1.setBackground(npd);
+        bm = BitmapFactory.decodeFile(currentQuestion.getBitmapPath(1));
+        npd = NinePatchBitmapFactory.createNinePatchDrawable(getResources(), bm);
+        ivLogo2.setBackground(npd);
+        bm = BitmapFactory.decodeFile(currentQuestion.getBitmapPath(2));
+        npd = NinePatchBitmapFactory.createNinePatchDrawable(getResources(), bm);
+        ivLogo3.setBackground(npd);
+        bm = BitmapFactory.decodeFile(currentQuestion.getBitmapPath(3));
+        npd = NinePatchBitmapFactory.createNinePatchDrawable(getResources(), bm);
+        ivLogo4.setBackground(npd);
+        bm = BitmapFactory.decodeFile(currentQuestion.getBitmapPath(4));
+        npd = NinePatchBitmapFactory.createNinePatchDrawable(getResources(), bm);
+        ivLogo5.setBackground(npd);
+        bm = BitmapFactory.decodeFile(currentQuestion.getBitmapPath(5));
+        npd = NinePatchBitmapFactory.createNinePatchDrawable(getResources(), bm);
+        ivLogo6.setBackground(npd);
 
         //set starting time of timer
         startTime = SystemClock.elapsedRealtime();
 
         //prepare next question
-        nextQuestion = new NextQuestion(currentQuestion.getQuestionNumber()+1,
+        nextQuestion = new SingleQuestionData(
+                currentQuestion.getQuestionNumber()+1,
                 currentQuestion.getCategory(),
                 currentQuestion.getLang(),
                 currentQuestion.getLogoSize());
@@ -104,64 +125,48 @@ public class QuestionActivity extends Activity {
     private View.OnClickListener logoClickListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
+            long endTime = SystemClock.elapsedRealtime();
+
             answerClicked = true;
             answerGiven = 0;
-            ImageView ivHelper = null;
-            endTime = SystemClock.elapsedRealtime();
             elapsedTime = currentQuestion.getPrevQuestionTime() + endTime - startTime;
 
             switch (v.getId()) {
                 case R.id.ivLogo1:
                     answerGiven = 1;
-                    ivHelper = ivLogo1;
                     flBorder = (FrameLayout) findViewById(R.id.flLogoContainer1);
                     break;
                 case R.id.ivLogo2:
                     answerGiven = 2;
-                    ivHelper = ivLogo2;
                     flBorder = (FrameLayout) findViewById(R.id.flLogoContainer2);
                     break;
                 case R.id.ivLogo3:
                     answerGiven = 3;
-                    ivHelper = ivLogo3;
                     flBorder = (FrameLayout) findViewById(R.id.flLogoContainer3);
                     break;
                 case R.id.ivLogo4:
                     answerGiven = 4;
-                    ivHelper = ivLogo4;
                     flBorder = (FrameLayout) findViewById(R.id.flLogoContainer4);
                     break;
                 case R.id.ivLogo5:
                     answerGiven = 5;
-                    ivHelper = ivLogo5;
                     flBorder = (FrameLayout) findViewById(R.id.flLogoContainer5);
                     break;
                 case R.id.ivLogo6:
                     answerGiven = 6;
-                    ivHelper = ivLogo6;
                     flBorder = (FrameLayout) findViewById(R.id.flLogoContainer6);
                     break;
             }
 
+            //save given answer in DB
             currentQuestion.saveAnswer(answerGiven, elapsedTime, QuestionActivity.this);
 
-            //ivHelper.setImageBitmap(BitmapFactory.decodeFile(currentQuestion.getBitmapPath(5)));
-
+            //show message if answer is (not) correct
             if (currentQuestion.getCorrectAnswer() == answerGiven) {
-                //flBorder.setBackground(getResources().getDrawable(R.drawable.question_logo_border_ok));
-                //ivHelper.setColorFilter(Color.rgb(0, 255, 0), android.graphics.PorterDuff.Mode.MULTIPLY );
-                //ivHelper.setBackgroundColor(0x3300FF00);
-
                 Toast.makeText(QuestionActivity.this, R.string.string_answer_correct, Toast.LENGTH_SHORT).show();
             } else {
-                //flBorder.setBackground(getResources().getDrawable(R.drawable.question_logo_border_nok));
-                //ivHelper.setColorFilter(Color.rgb( 255, 0, 0), PorterDuff.Mode.OVERLAY );
-                //ivHelper.setBackgroundColor(0x33FF0000);
-
                 Toast.makeText(QuestionActivity.this, R.string.string_answer_wrong, Toast.LENGTH_SHORT).show();
             }
-            //flBorder.invalidate();
-            //ivHelper.invalidate();
 
             // blink a border of clicked logo to indicate if it was good or bad answer...
             int timeInMilis = 300;
@@ -174,8 +179,10 @@ public class QuestionActivity extends Activity {
                 public void run() {
                     // ... and then start next activity
                     if (isLastQuestion) {
+                        Log.d(DEBUG_TAG, "ResultActivity started when logo was clicked");
                         startResultActivity();
                     } else if (logosLoaded) {
+                        Log.d(DEBUG_TAG, "Next QuestionActivity started when logo was clicked");
                         startNextQuestionActivity();
                     }
                 }
@@ -212,16 +219,16 @@ public class QuestionActivity extends Activity {
 
         @Override
         protected Void doInBackground(Void... params) {
-            Log.d(DEBUG_TAG, "doInBackground2 ");
 
             while (true) {
                 int n = 0;
                 for (int i=0; i<LOGOS_NUM; i++) {
-                    if (logos[i].isLogoSaved())
+                    //todo zrobić podobnie jak w PreQuestionActivity
+                    if (logos[i].isLogoSaved(false))
                         n++;
                 }
 
-                Log.d(DEBUG_TAG, "while loop..." + n);
+                Log.d(DEBUG_TAG, "Logos downloaded: " + n);
                 if (n >= 6) {
                     logosLoaded = true;
                     break;
@@ -232,11 +239,11 @@ public class QuestionActivity extends Activity {
 
         @Override
         protected void onPostExecute(Void result) {
-            Log.d(DEBUG_TAG, "onPostExecute2 ");
             for (int i = 0; i < LOGOS_NUM; i++)
                 nextQuestion.setBitmapPath(logos[i].getLogoPath(), i);
 
             if (logosLoaded && answerClicked) {
+                Log.d(DEBUG_TAG, "Next QuestionActivity started when downloading logos has been finished");
                 startNextQuestionActivity();
             }
         }

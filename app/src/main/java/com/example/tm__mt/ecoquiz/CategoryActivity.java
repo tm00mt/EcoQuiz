@@ -8,7 +8,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -21,8 +20,7 @@ import java.util.List;
 public class CategoryActivity extends ListActivity {
     private static final String DEBUG_TAG = "CategoryActivity";
 
-    private List<String> categoriesList;
-    EcoQuizDBHelper DBHelper = new EcoQuizDBHelper(this);
+    private EcoQuizDBHelper DBHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -31,8 +29,9 @@ public class CategoryActivity extends ListActivity {
 
         Log.d(DEBUG_TAG, "Creating CategoryActivity...");
 
-        categoriesList  = new ArrayList<>();
-        categoriesList = DBHelper.getCategories(ApplicationSettings.getLanguage());
+        DBHelper = new EcoQuizDBHelper(this);
+        List<String> categoriesList  = DBHelper.getCategories(ApplicationSettings.getLanguage());
+
         ArrayAdapter<String> myAdapter = new ArrayAdapter <>(this,
                 R.layout.category_row_item, R.id.tvCategoryName, categoriesList);
         setListAdapter(myAdapter);
@@ -42,15 +41,14 @@ public class CategoryActivity extends ListActivity {
     protected void onListItemClick(ListView l, View v, int position, long id) {
         super.onListItemClick(l, v, position, id);
 
-        Log.d(DEBUG_TAG, "Item was clicked!!!" + position);
+        //Log.d(DEBUG_TAG, position + ". list item was clicked");
 
         int questionNumber = 1;
-        NextQuestion nextQuestion = new NextQuestion(questionNumber,
+        SingleQuestionData nextQuestion = new SingleQuestionData(questionNumber,
                                                      DBHelper.getCategoryId(position),
                                                      ApplicationSettings.getLanguage(),
                                                      ApplicationSettings.getScreenDensity());
 
-        // todo nietestowane!!!!!!!!!!!!!!!!
         if (nextQuestion.prepareFirst(CategoryActivity.this)) {
             Intent i;
             if (ApplicationSettings.getPathSource() == ApplicationSettings.PATH_SRC_LOCAL)
@@ -61,8 +59,7 @@ public class CategoryActivity extends ListActivity {
             i.putExtra("questionData", nextQuestion);
             startActivity(i);
         } else {
-            Toast.makeText(CategoryActivity.this, "No (more) data in DB.", Toast.LENGTH_SHORT).show();
-            //finish();
+            Toast.makeText(CategoryActivity.this, R.string.category_without_questions, Toast.LENGTH_SHORT).show();
         }
     }
 }

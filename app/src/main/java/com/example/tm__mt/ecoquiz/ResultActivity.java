@@ -38,7 +38,7 @@ public class ResultActivity extends ListActivity {
             }
         } else {
             AlertDialog.Builder alertDialogBuilder = new AlertDialog.Builder(this);
-            alertDialogBuilder.setMessage("No data to display.");
+            alertDialogBuilder.setMessage(R.string.no_data_to_display);
             alertDialogBuilder.setPositiveButton("OK",
                     new DialogInterface.OnClickListener() {
                         @Override

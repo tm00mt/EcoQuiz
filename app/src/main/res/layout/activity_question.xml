@@ -26,7 +26,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/ivLogo1"
-                android:contentDescription="@string/desc_iv_logo1" />
+                android:contentDescription="@string/desc_iv_logo1"
+                android:scaleType="fitXY" />
         </FrameLayout>
 
         <FrameLayout
@@ -42,7 +43,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/ivLogo2"
-                android:contentDescription="@string/desc_iv_logo2" />
+                android:contentDescription="@string/desc_iv_logo2"
+                android:scaleType="fitXY" />
         </FrameLayout>
 
         <FrameLayout
@@ -58,7 +60,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/ivLogo3"
-                android:contentDescription="@string/desc_iv_logo3" />
+                android:contentDescription="@string/desc_iv_logo3"
+                android:scaleType="fitXY" />
         </FrameLayout>
 
     </LinearLayout>
@@ -84,7 +87,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/ivLogo4"
-                android:contentDescription="@string/desc_iv_logo4" />
+                android:contentDescription="@string/desc_iv_logo4"
+                android:scaleType="fitXY" />
         </FrameLayout>
 
         <FrameLayout
@@ -100,7 +104,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/ivLogo5"
-                android:contentDescription="@string/desc_iv_logo5" />
+                android:contentDescription="@string/desc_iv_logo5"
+                android:scaleType="fitXY" />
         </FrameLayout>
 
         <FrameLayout
@@ -116,7 +121,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:id="@+id/ivLogo6"
-                android:contentDescription="@string/desc_iv_logo6" />
+                android:contentDescription="@string/desc_iv_logo6"
+                android:adjustViewBounds="false"
+                android:scaleType="fitXY" />
         </FrameLayout>
 
     </LinearLayout>

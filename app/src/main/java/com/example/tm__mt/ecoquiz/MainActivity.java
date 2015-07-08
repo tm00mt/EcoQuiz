@@ -1,8 +1,7 @@
 package com.example.tm__mt.ecoquiz;
 
+import android.app.Activity;
 import android.content.Intent;
-import android.content.res.Configuration;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -10,12 +9,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.TextView;
 
-import java.util.Locale;
-
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends Activity {
     private static final String DEBUG_TAG = "EcoQuizMain";
 
     TextView tvStartQuiz, tvResults;
+    View decorView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -24,7 +22,7 @@ public class MainActivity extends ActionBarActivity {
 
         Log.d(DEBUG_TAG, "Creating MainActivity....");
 
-        new ApplicationSettings(getApplicationContext());
+        //new ApplicationSettings(getApplicationContext());
 
         //ApplicationSettings.setLanguage(Locale.getDefault().getISO3Language());
 
@@ -33,8 +31,25 @@ public class MainActivity extends ActionBarActivity {
 
         tvStartQuiz.setOnClickListener(optionClickListener);
         tvResults.setOnClickListener(optionClickListener);
+
+        //------------------------------------------
+        decorView = getWindow().getDecorView();
+        // Remember that you should never show the action bar if the
+        // status bar is hidden, so hide that too if necessary.
+        //ActionBar actionBar = getActionBar();
+        //actionBar.hide();
+        //-------------------------------------------
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        // Hide the status bar.
+        int uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
+        decorView.setSystemUiVisibility(uiOptions);
+    }
+    //-------------------------------------
     //@Override
     //public void onConfigurationChanged(Configuration newConfig) {
     //    super.onConfigurationChanged(newConfig);

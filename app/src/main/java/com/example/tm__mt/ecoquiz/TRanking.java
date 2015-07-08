@@ -1,6 +1,18 @@
 package com.example.tm__mt.ecoquiz;
 
-public class Ranking {
+/**
+ * Created by tm__mt
+ *
+ * Holds a structure of Ranking table and provides basic functions/queries to that table.
+ */
+public class TRanking {
+    //table structure: table and column names
+    private static final String TABLE_NAME          = "Ranking";
+    private static final String COL_ATTEMPT_CNTR    = "ATTEMPT_CNTR";
+    private static final String COL_CATEGORY_ID     = "CATEGORY_ID";
+    private static final String COL_NAME            = "NAME";
+    private static final String COL_SCORE           = "SCORE";
+    private static final String COL_TIME            = "TIME";
 
     private int attemptCntr;
     private int categoryId;
@@ -8,14 +20,8 @@ public class Ranking {
     private int score;
     private String time;
 
-    private static final String COL_ATTEMPT_CNTR = "ATTEMPT_CNTR";
-    private static final String COL_CATEGORY_ID = "CATEGORY_ID";
-    private static final String COL_NAME = "NAME";
-    private static final String COL_SCORE = "SCORE";
-    private static final String COL_TIME = "TIME";
 
-    private static final String TB_NAME = "Ranking";
-    private static final String CREATE_QUERY = "CREATE TABLE IF NOT EXISTS " + getTbName() + " ( "
+    private static final String CREATE_QUERY = "CREATE TABLE IF NOT EXISTS " + getTableName() + " ( "
             + " ATTEMPT_CNTR      INTEGER NOT NULL "
             + ",CATEGORY_ID       INTEGER NOT NULL "
             + ",NAME              TEXT NOT NULL"
@@ -24,11 +30,11 @@ public class Ranking {
             + ",PRIMARY KEY (ATTEMPT_CNTR, CATEGORY_ID)"
             + ",FOREIGN KEY(`CATEGORY_ID`) REFERENCES Category(ID)"
             + ");";
-    private static String INSERT_QUERY = "";
-    private static final String DROP_QUERY = "DROP " + getTbName() + " TABLE;";
+    private static final String INSERT_QUERY = "";
+    private static final String DROP_QUERY = "DROP " + getTableName() + " TABLE;";
 
-    public static String getTbName() {
-        return TB_NAME;
+    public static String getTableName() {
+        return TABLE_NAME;
     }
 
     public static String getCreateQuery() {

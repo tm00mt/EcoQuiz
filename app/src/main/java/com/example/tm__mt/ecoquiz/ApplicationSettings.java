@@ -1,8 +1,10 @@
 package com.example.tm__mt.ecoquiz;
 
+import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.util.DisplayMetrics;
+import android.util.Log;
 
 import java.util.Locale;
 
@@ -15,8 +17,12 @@ import java.util.Locale;
  * - screen density id
  *
  */
-public class ApplicationSettings {
-    private static Context ctx;
+public class ApplicationSettings extends Application {
+    private static final String DEBUG_TAG = "ApplicationSettings";
+
+    private static Context ctx = null;
+    private static int densityId = 0;
+    private static int langId = 0;
 
     private static String APP_PREFS = "ecoquiz.app_prefs";
     private static String PATH_PREFS = "PATH_PREFS";
@@ -24,8 +30,12 @@ public class ApplicationSettings {
     public static final int PATH_SRC_WEB   = 1;
     public static final int PATH_SRC_LOCAL = 2;
 
-    public ApplicationSettings(Context ctx) {
-        this.ctx = ctx;
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        Log.d(DEBUG_TAG, "Creating ApplicationSettings....");
+
+        this.ctx = getApplicationContext();
     }
 
     public static int getLanguage() {
@@ -34,10 +44,13 @@ public class ApplicationSettings {
         // 2 - polish
 
         switch (Locale.getDefault().getISO3Language()) {
-            case "eng": return 1;
-            case "pol": return 2;
-            default:    return 1;
+            case "eng": langId = 1; break;
+            case "pol": langId = 2; break;
+            default:    langId = 1;
         }
+        Log.d(DEBUG_TAG, "Language id of device: " + langId);
+
+        return langId;
     }
 
     public static int getPathSource() {
@@ -46,18 +59,22 @@ public class ApplicationSettings {
         // 2 - local storage
 
         SharedPreferences prefs = ctx.getSharedPreferences(APP_PREFS, Context.MODE_PRIVATE);
+        int pathSrc = prefs.getInt(PATH_PREFS, 1);
+        Log.d(DEBUG_TAG, "Logos path source id: " + pathSrc);
 
-        return prefs.getInt(PATH_PREFS, 1);
+        return pathSrc;
     }
 
     public static void setPathSource(int pathSrc) {
         SharedPreferences prefs = ctx.getSharedPreferences(APP_PREFS, Context.MODE_PRIVATE);
 
         prefs.edit().putInt(PATH_PREFS, pathSrc).apply();
+        Log.d(DEBUG_TAG, "New logos path source id: " + pathSrc);
     }
 
     public static int getScreenDensity() {
-        // returns the screen density id of device (Data collected during a 7-day period ending on April 6, 2015.)
+        // returns the screen density id of device
+        // (Data collected during a 7-day period ending on April 6, 2015.):
         // 1 - low density (4,8%, not supported)
         // 2 - medium density (16,8%)
         // 3 - high density (40,2%, default)
@@ -65,19 +82,26 @@ public class ApplicationSettings {
         // 5 - extra extra high density (15,9%)
         // 6 - extra extra extra high density (???%, not supported)
 
-        DisplayMetrics metrics = new DisplayMetrics();
-        switch (metrics.densityDpi) {
-            case DisplayMetrics.DENSITY_LOW:
-            case DisplayMetrics.DENSITY_MEDIUM:
-                return 2;
-            case DisplayMetrics.DENSITY_HIGH:
-                return 3;
-            case DisplayMetrics.DENSITY_XHIGH:
-                return 4;
-            case DisplayMetrics.DENSITY_XXHIGH:
-            case DisplayMetrics.DENSITY_XXXHIGH:
-                return 5;
-            default: return 3;
+        if (densityId == 0) {
+            DisplayMetrics metrics = new DisplayMetrics();
+
+            switch (metrics.densityDpi) {
+                case DisplayMetrics.DENSITY_LOW:
+                case DisplayMetrics.DENSITY_MEDIUM:
+                    densityId = 2; break;
+                case DisplayMetrics.DENSITY_HIGH:
+                    densityId = 3; break;
+                case DisplayMetrics.DENSITY_XHIGH:
+                    densityId = 4; break;
+                case DisplayMetrics.DENSITY_XXHIGH:
+                case DisplayMetrics.DENSITY_XXXHIGH:
+                    densityId = 5; break;
+                default:
+                    densityId = 3;
+            }
         }
+        Log.d(DEBUG_TAG, "Screen density id: " + densityId);
+
+        return densityId;
     }
 }

@@ -23,4 +23,11 @@
     <string name="string_answer_correct">Correct</string>
     <string name="string_answer_wrong">Wrong</string>
 
+    <!-- Error/warning/info messages -->
+    <string name="category_without_questions">There are no questions in this category.</string>
+    <string name="no_internet_connection">Internet connection is unavailable.</string>
+    <string name="new_record">Congratulations! New record!</string>
+    <string name="no_data_to_display">No data to display.</string>
+    <string name="downloading_to_long">Logos downloading takes to long. Try again later.</string>
+
 </resources>

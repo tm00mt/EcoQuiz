@@ -5,29 +5,30 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import android.util.Log;
 
-public class NextQuestion implements Parcelable {
+public class SingleQuestionData implements Parcelable {
     private String DEBUG_TAG = "NextQuestion";
+
     private static final int LINKS_NUM = 6;
 
-    private String[] logoLinks = new String[LINKS_NUM];
-    private String[] bitmapPaths = new String[LINKS_NUM];
-    private String question = "";
-    private int questionNumber = 0;
-    private int logoSize = 0;
-    private int category = 0;
-    private int lang = 0;
-    private int correctAnswer = 0;
-    private int attemptCntr = 0;
+    private String[] logoLinks    = new String[LINKS_NUM];
+    private String[] bitmapPaths  = new String[LINKS_NUM];
+    private String   question     = "";
     private long prevQuestionTime = 0;
+    private int questionNumber    = 0;
+    private int logoSize          = 0;
+    private int category          = 0;
+    private int lang              = 0;
+    private int correctAnswer     = 0;
+    private int attemptCntr       = 0;
 
-    public NextQuestion(int questionNumber, int category, int lang, int logoSize) {
+    public SingleQuestionData(int questionNumber, int category, int lang, int logoSize) {
         this.setQuestionNumber(questionNumber);
         this.setCategory(category);
         this.setLang(lang);
         this.setLogoSize(logoSize);
     }
 
-    private NextQuestion(Parcel in) {
+    private SingleQuestionData(Parcel in) {
         this.questionNumber = in.readInt();
         this.category = in.readInt();
         this.lang = in.readInt();
@@ -83,14 +84,14 @@ public class NextQuestion implements Parcelable {
         dest.writeString(this.bitmapPaths[5]);
     }
 
-    public static final Parcelable.Creator<NextQuestion> CREATOR
-            = new Parcelable.Creator<NextQuestion>() {
-        public NextQuestion createFromParcel(Parcel in) {
-            return new NextQuestion(in);
+    public static final Parcelable.Creator<SingleQuestionData> CREATOR
+            = new Parcelable.Creator<SingleQuestionData>() {
+        public SingleQuestionData createFromParcel(Parcel in) {
+            return new SingleQuestionData(in);
         }
 
-        public NextQuestion[] newArray(int size) {
-            return new NextQuestion[size];
+        public SingleQuestionData[] newArray(int size) {
+            return new SingleQuestionData[size];
         }
     };
 
@@ -127,9 +128,12 @@ public class NextQuestion implements Parcelable {
     }
 
     public String getLogoLink(int i) {
-        if (i >= 0 && i < LINKS_NUM)
-            return this.logoLinks[i];
-        else
+        if (i >= 0 && i < LINKS_NUM) {
+            if (this.logoLinks[i].contains("%size%"))
+                return this.logoLinks[i].replace("%size%", "/" + ApplicationSettings.getScreenDensity() + "/");
+            else
+                return this.logoLinks[i];
+        } else
             return "";
     }
 
@@ -173,7 +177,7 @@ public class NextQuestion implements Parcelable {
     }
 
     boolean prepareFirst(Context context) {
-        Log.d(DEBUG_TAG, "Preparing data from DB (1st question)...");
+        Log.d(DEBUG_TAG, "Preparing data of first question");
 
         if (!prepare(context))
             return false;
