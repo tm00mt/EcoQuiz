@@ -86,17 +86,18 @@ public class ApplicationSettings extends Application {
             DisplayMetrics metrics = new DisplayMetrics();
 
             switch (metrics.densityDpi) {
-                case DisplayMetrics.DENSITY_LOW:
+                //TODO odkomentować pozostałe przypadki, gdy loga dla nich będą wrzucone na serwer do odpowiednich folderów
+            /*    case DisplayMetrics.DENSITY_LOW:
                 case DisplayMetrics.DENSITY_MEDIUM:
                     densityId = 2; break;
-                case DisplayMetrics.DENSITY_HIGH:
+            */    case DisplayMetrics.DENSITY_HIGH:
                     densityId = 3; break;
-                case DisplayMetrics.DENSITY_XHIGH:
+            /*    case DisplayMetrics.DENSITY_XHIGH:
                     densityId = 4; break;
                 case DisplayMetrics.DENSITY_XXHIGH:
                 case DisplayMetrics.DENSITY_XXXHIGH:
                     densityId = 5; break;
-                default:
+            */    default:
                     densityId = 3;
             }
         }
